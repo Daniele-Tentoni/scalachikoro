@@ -1,9 +1,11 @@
 package it.scalachikoro.client
 
-import akka.actor.ActorSystem
-import it.scalachikoro.client.mainview.MainViewActor
+import it.scalachikoro.client.controllers.MainController
+import scalafx.application.JFXApp
 
-object Client extends App {
-  val client = ActorSystem("Client")
-  client.actorOf(MainViewActor.props())
+object Client extends JFXApp {
+  val c = new MainController()
+  c.start(this)
+  /* val client = ActorSystem("Client")
+  client.actorOf(MainViewActor.props()) */
 }

@@ -1,6 +1,7 @@
 package it.scalachikoro.client.mainview
 
 import akka.actor.{Actor, ActorRef, Props}
+import it.scalachikoro.constants.ActorConstants.LOBBY_ACTOR_NAME
 import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,15 +13,17 @@ object MainViewActor {
 }
 
 class MainViewActor extends Actor {
-  var server: ActorRef = _
+  var server: Option[ActorRef] = Option.empty
 
   def receive: Receive = {
-    case Queued(pos) =>
-      println(f"We are queue at position: $pos.")
+    case Queued(id) =>
+      println(f"We are queue with id: $id.")
       print("What you wanna do now? ")
       val action = askForAction()
-      if(action == "leave" && server != null)
-        server ! Leave()
+      if (action == "leave")
+        withServerLobby {
+          _ ! Leave(id)
+        }
 
     case LeftQueue() =>
       println(f"We've left the queue.")
@@ -31,14 +34,23 @@ class MainViewActor extends Actor {
 
   def askForAction(): String = scala.io.StdIn.readLine()
 
+  private def withServerLobby(f: ActorRef => Unit): Unit = server match {
+    case Some(ref) => f(ref)
+    case None => println("No server found.")
+  }
+
   // This is the constructor section. Find where the server is located and send a first message.
-  context.system.actorSelection("akka.tcp://Server@127.0.0.1:47000/user/server").resolveOne()(10.seconds) onComplete {
+  val path = f"akka.tcp://Server@127.0.0.1:47000/user/$LOBBY_ACTOR_NAME"
+  context.system.actorSelection(path).resolveOne()(10.seconds) onComplete {
     case Success(ref: ActorRef) =>
-      server = ref
+      server = Option(ref)
       println(f"Located Server actor: $server.")
       print("Write your name: ")
       val name = askForAction()
-      server ! Hi(name)
+      withServerLobby {
+        _ ! Hi(name)
+      }
+
     case Failure(t) =>
       System.err.println(f"Failed to locate Server actor. Reason: $t")
       context.system.terminate()
