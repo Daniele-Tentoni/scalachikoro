@@ -5,30 +5,33 @@ import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued}
 import it.scalachikoro.players.Player
 import it.scalachikoro.server.lobby.LobbyActor.PlayerRef
 
-import scala.collection.immutable.Queue
+import scala.util.Random.nextInt
 
 object LobbyActor {
   def props(): Props = Props(new LobbyActor())
 
-  trait Referable{
+  trait Referable {
     val actorRef: ActorRef
   }
 
-  case class PlayerRef(name: String, actorRef: ActorRef) extends Player with Referable
+  case class PlayerRef(id: String, name: String, actorRef: ActorRef) extends Player with Referable
 
-  def player(name: String, ref: ActorRef): PlayerRef = PlayerRef(name, ref)
+  def player(name: String, ref: ActorRef): PlayerRef = PlayerRef(nextInt toString(), name, ref)
 }
 
 class LobbyActor extends Actor {
-  var queue: Queue[PlayerRef] = Queue.empty[PlayerRef]
+  var lobby: Lobby[PlayerRef] = PlayersLobby(Set.empty[PlayerRef])
+
   def receive: Receive = {
     case Hi(name) =>
       println(f"$name say Hi to us. Add to queue.")
-      queue = queue.enqueue(LobbyActor.player(name, sender))
-      sender ! Queued(queue.size)
+      val p = LobbyActor.player(name, sender)
+      lobby = lobby + p
+      sender ! Queued(p.id)
 
-    case Leave() =>
-      queue = queue.filterNot(f => f.actorRef != sender)
+    case Leave(id) =>
+      println(f"Player $id wanna leave the queue.")
+      lobby = lobby - id
       sender ! LeftQueue()
 
     case _ => println(f"${sender.path.name} send an unknown message.")
