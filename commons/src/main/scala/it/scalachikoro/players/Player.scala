@@ -1,5 +1,5 @@
 package it.scalachikoro.players
 
-class Player {
-
+trait Player{
+  val name: String
 }
