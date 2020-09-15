@@ -1,0 +1,45 @@
+language: scala
+
+install: true
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - /tmp/texlive
+    - $HOME/.texlive
+    - $HOME/.cache/coursier
+    - $HOME/.sbt
+
+jobs:
+  include:
+    - stage: Run sbt on Linux
+      os: linux
+      dist: trusty
+      scala:
+        - 2.12.8
+        - 2.13.1
+      jdk:
+        - openjdk8
+        - openjdk11
+        - openjdk14
+    - os: linux
+      dist: xenial
+      scala:
+        - 2.12.8
+        - 2.13.1
+      jdk:
+        - openjdk8
+        - openjdk11
+        - openjdk14
+    - stage: Run sbt on Mac
+      os: osx
+      osx_image:
+        - xcode11
+        - xcode12
+      scala:
+        - 2.12.8
+        - 2.13.1
+      jdk:
+        - openjdk8
+        - openjdk11
+        - openjdk14
