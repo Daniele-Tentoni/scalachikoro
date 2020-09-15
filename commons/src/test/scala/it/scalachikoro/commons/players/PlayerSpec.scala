@@ -1,7 +1,6 @@
 package it.scalachikoro.commons.players
 
-import it.scalachikoro.cards.Card
-import it.scalachikoro.players.PlayerKoro
+import it.scalachikoro.commons.cards.Card
 import org.scalatest.funspec.AnyFunSpec
 
 class PlayerSpec extends AnyFunSpec {

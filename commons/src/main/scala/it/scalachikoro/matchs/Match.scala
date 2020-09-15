@@ -1,7 +1,7 @@
 package it.scalachikoro.matchs
 
-import it.scalachikoro.cards.{Card, Deck}
-import it.scalachikoro.players.{Player, PlayerKoro}
+import it.scalachikoro.commons.cards.{Card, Deck}
+import it.scalachikoro.commons.players.{Player, PlayerKoro}
 
 import scala.util.Random
 

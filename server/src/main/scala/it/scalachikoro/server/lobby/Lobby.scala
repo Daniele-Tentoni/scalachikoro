@@ -1,6 +1,6 @@
 package it.scalachikoro.server.lobby
 
-import it.scalachikoro.players.Identifiable
+import it.scalachikoro.commons.players.Identifiable
 
 trait Lobby[T <: Identifiable] {
   val items: Set[T]

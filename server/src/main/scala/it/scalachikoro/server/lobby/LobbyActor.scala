@@ -2,7 +2,7 @@ package it.scalachikoro.server.lobby
 
 import akka.actor.{Actor, ActorRef, Props}
 import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued}
-import it.scalachikoro.players.Player
+import it.scalachikoro.commons.players.Player
 import it.scalachikoro.server.lobby.LobbyActor.PlayerRef
 
 import scala.util.Random.nextInt

@@ -1,11 +1,14 @@
-package it.scalachikoro.cards
+package it.scalachikoro.commons.cards
 
-import it.scalachikoro.cards.AimCard.{AmusementPark, RadioTower, ShoppingHall, TrainStation}
-import it.scalachikoro.cards.CardType.{Landmark, Major, PrimaryIndustry, Restaurants, SecondaryIndustry}
-import it.scalachikoro.cards.InTurn.InTurnCode
+import it.scalachikoro.commons.cards.AimCard.{AmusementPark, RadioTower, ShoppingHall, TrainStation}
+import it.scalachikoro.commons.cards.CardType.{Landmark, Major, PrimaryIndustry, Restaurants, SecondaryIndustry}
+import it.scalachikoro.commons.cards.InTurn.InTurnCode
 
 sealed class InTurn(code: InTurnCode) {
-  def check(turn: Boolean): Boolean = turn && (code == 0 || code == 2)
+  def check(turn: Boolean): Boolean =
+    code == 2 ||
+      turn && (code == 0) ||
+      !turn && (code == 1)
 }
 
 object InTurn {
@@ -53,6 +56,7 @@ sealed class Card(name: String, cost: Int, cType: CardType, copies: Int) {
 }
 
 object AimCard {
+
   // TODO: Implement AimCards.
   case class TrainStation() extends Card("Train Station", 2, Landmark(), 1)
 
@@ -61,6 +65,7 @@ object AimCard {
   case class AmusementPark() extends Card("Amusement Park", 2, Landmark(), 1)
 
   case class RadioTower() extends Card("Radio Tower", 2, Landmark(), 1)
+
 }
 
 object Card {

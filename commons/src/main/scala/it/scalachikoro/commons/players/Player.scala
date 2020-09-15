@@ -1,6 +1,6 @@
-package it.scalachikoro.players
+package it.scalachikoro.commons.players
 
-import it.scalachikoro.cards.Card
+import it.scalachikoro.commons.cards.Card
 
 trait Player extends Identifiable {
   val name: String
