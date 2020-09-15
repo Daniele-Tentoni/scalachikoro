@@ -11,7 +11,10 @@ val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % akkaV % Test
 
 val akkaDependencies = Seq(akkaRemote, akkaActor, akkaTestKit)
 
-val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % Test
+val scalactic = "org.scalactic" %% "scalactic" % "3.2.0"
+val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
+
+val testDependencies = Seq(scalactic, scalaTest)
 
 // Determine OS version of JavaFX binaries
 lazy val osName = System.getProperty("os.name") match {
@@ -29,11 +32,21 @@ lazy val scalaFXDep = javaFXModules.map(m =>
   "org.openjfx" % s"javafx-$m" % "14.0.1" classifier osName
 )
 
+/*
+ * Scoverage configurations.
+ */
+coverageMinimum := 80
+coverageFailOnMinimum := true
+
+/*
+ * Project configurations.
+ */
 lazy val commons = Project(
   id = "commons",
   base = file("commons"))
   .settings(
-    name := "commons"
+    name := "commons",
+    libraryDependencies ++= testDependencies
   )
 
 lazy val server = Project(

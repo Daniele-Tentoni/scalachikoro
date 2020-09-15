@@ -1,45 +1,59 @@
 package it.scalachikoro.cards
 
+import it.scalachikoro.cards.AimCard.{AmusementPark, RadioTower, ShoppingHall, TrainStation}
 import it.scalachikoro.cards.CardType.{Landmark, Major, PrimaryIndustry, Restaurants, SecondaryIndustry}
+import it.scalachikoro.cards.InTurn.InTurnCode
 
-sealed class Trigger(color: String)
-
-object Trigger {
-
-  case class Blue() extends Trigger("Blue")
-
-  case class Green() extends Trigger("Yellow")
-
-  case class Red() extends Trigger("Red")
-
-  case class Violet() extends Trigger("Violet")
-
-  case class None() extends Trigger("Yellow")
-
+sealed class InTurn(code: InTurnCode) {
+  def check(turn: Boolean): Boolean = turn && (code == 0 || code == 2)
 }
 
-sealed class CardType(name: String, icon: String)
+object InTurn {
+  type InTurnCode = Int
+
+  case class PlayerTurn() extends InTurn(0)
+
+  case class OtherPlayerTurn() extends InTurn(1)
+
+  case class BothPlayerTurn() extends InTurn(2)
+
+  case class NoPlayerTurn() extends InTurn(3)
+
+  implicit def int2turn(i: Int): InTurn = i match {
+    case 0 => PlayerTurn()
+    case 1 => OtherPlayerTurn()
+    case 2 => BothPlayerTurn()
+    case _ => NoPlayerTurn()
+  }
+}
+
+sealed class CardType(name: String, icon: String, activation: Seq[Int], inTurn: InTurn) {
+  def trigger(n: Int, playersTurn: Boolean): Boolean = (activation contains n) && (inTurn check playersTurn)
+}
 
 object CardType {
 
-  case class PrimaryIndustry(activation: Seq[Int]) extends CardType("Primary Industry", "P")
+  case class Landmark() extends CardType("Landmark", "L", Seq.empty, 0)
 
-  case class SecondaryIndustry(activation: Seq[Int]) extends CardType("Secondary Industry ", "S")
+  case class PrimaryIndustry(activation: Seq[Int]) extends CardType("Primary Industry", "P", activation, 2)
 
-  case class Restaurants(activation: Seq[Int]) extends CardType("Restaurants", "R")
+  case class SecondaryIndustry(activation: Seq[Int]) extends CardType("Secondary Industry ", "S", activation, 0)
 
-  case class Major(activation: Seq[Int]) extends CardType("Major Establishment", "M")
+  case class Restaurants(activation: Seq[Int]) extends CardType("Restaurants", "R", activation, 1)
 
-  case class Landmark() extends CardType("Landmard", "L")
+  case class Major(activation: Seq[Int]) extends CardType("Major Establishment", "M", activation, 0)
 
 }
 
-sealed class Card(name: String, cost: Int, cardType: CardType, copies: Int) {
+sealed class Card(name: String, cost: Int, cType: CardType, copies: Int) {
   def all: Seq[Card] = (0 until copies).map(m => this.clone().asInstanceOf[Card])
+
+  // TODO: Implement trigger invocation.
+  def trigger(n: Int, inTurn: Boolean): Int = if (cType.trigger(n, inTurn)) 1 else 0
 }
 
-object Card {
-
+object AimCard {
+  // TODO: Implement AimCards.
   case class TrainStation() extends Card("Train Station", 2, Landmark(), 1)
 
   case class ShoppingHall() extends Card("Shopping Hall", 2, Landmark(), 1)
@@ -47,12 +61,14 @@ object Card {
   case class AmusementPark() extends Card("Amusement Park", 2, Landmark(), 1)
 
   case class RadioTower() extends Card("Radio Tower", 2, Landmark(), 1)
+}
 
+object Card {
   def allAimCards: Seq[Card] = Seq(TrainStation(), ShoppingHall(), AmusementPark(), RadioTower())
 
   def starterCards = Seq(WheatField(), Bakery())
 
-  def allBoardCards = WheatField().all ++ Ranch().all ++ Forest().all ++ Mine().all ++ AppleOrchard().all ++
+  def allBoardCards: Seq[Card] = WheatField().all ++ Ranch().all ++ Forest().all ++ Mine().all ++ AppleOrchard().all ++
     Bakery().all ++ ConvStore().all ++ CheeseFact().all ++ FurnitureFact().all ++ FruitMarket().all ++ Cafe().all ++
     FamilyRest().all ++ Stadium().all ++ TVStation().all ++ BusinessCenter().all
 
