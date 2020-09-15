@@ -1,6 +1,6 @@
 package it.scalachikoro.matchs
 
-import it.scalachikoro.commons.cards.{Card, Deck}
+import it.scalachikoro.commons.cards.{BoardCard, Deck}
 import it.scalachikoro.commons.players.{Player, PlayerKoro}
 
 import scala.util.Random
@@ -15,7 +15,8 @@ case class Match(players: Seq[PlayerKoro], deck: Deck) {
       val gain = i.cards.foldLeft(0)((acc, i) => acc + i.trigger(roll, inTurn))
       val p = i.receive(gain)
       p +: acc
-    }}
+    }
+    }
     (copy(players = newPlayers), roll)
   }
 
@@ -23,7 +24,7 @@ case class Match(players: Seq[PlayerKoro], deck: Deck) {
 
 object Match {
   def apply(players: Seq[Player]): Match = new Match(
-    players.map(m => PlayerKoro(m.name, m.id, 0, Seq.empty[Card])),
+    players.map(m => PlayerKoro(m.name, m.id, 0, Seq.empty[BoardCard])),
     Deck.shuffled
   )
 }

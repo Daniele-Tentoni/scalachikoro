@@ -2,7 +2,7 @@ name := "scalachikoro"
 
 version := "0.1.0"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.10.3"
 
 val akkaV = "2.5.13"
 val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaV
@@ -15,6 +15,15 @@ val scalactic = "org.scalactic" %% "scalactic" % "3.2.0"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
 
 val testDependencies = Seq(scalactic, scalaTest)
+
+// val junit = "junit" % "junit" % "4.12"
+// val cukeCore = "io.cucumber" %% "cucumber-core" % "2.0.1" % Test
+// val cuke_run = "com.waioeka.sbt" %% "cucumber-runner" % "0.0.8"
+// val cuke_scala = "info.cukes" %% "cucumber-scala" % "1.2.4" % Test
+// val cuke_junit = "info.cukes" %% "cucumber-junit" % "1.2.4" % Test
+// val cukeJUnit = "io.cucumber" %% "cucumber-junit" % "2.0.1" % Test
+
+// val cukeDependencies = Seq(cuke_run, cuke_scala, cuke_junit)
 
 // Determine OS version of JavaFX binaries
 lazy val osName = System.getProperty("os.name") match {
