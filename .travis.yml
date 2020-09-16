@@ -18,7 +18,30 @@ jobs:
       scala:
         - 2.12.12
       jdk:
-        - openjdk8
+        - openjdk11
+    - os: linux
+      dist: xenial
+      scala:
+        - 2.12.12
+      jdk:
+        - openjdk11
+    - os: linux
+      dist: trusty
+      scala:
+        - 2.10.3
+      jdk:
+        - openjdk11
+    - os: linux
+      dist: xenial
+      scala:
+        - 2.10.3
+      jdk:
+        - openjdk11
+    - os: linux
+      dist: trusty
+      scala:
+        - 2.12.12
+      jdk:
         - openjdk11
         - openjdk14
     - os: linux
@@ -26,24 +49,18 @@ jobs:
       scala:
         - 2.12.12
       jdk:
-        - openjdk8
-        - openjdk11
         - openjdk14
     - os: linux
       dist: trusty
       scala:
-        - 2.13.3
+        - 2.10.3
       jdk:
-        - openjdk8
-        - openjdk11
         - openjdk14
     - os: linux
       dist: xenial
       scala:
-        - 2.13.3
+        - 2.10.3
       jdk:
-        - openjdk8
-        - openjdk11
         - openjdk14
     - stage: Run sbt on Mac
       os: osx
