@@ -5,9 +5,11 @@ import scala.util.Random
 case class Deck(cards: Seq[Card]) {
   def visibleCards: Seq[Card] = cards take 15
 
-  def pickCard(i: Int): (Deck, Option[Card]) = {
-    val cut = cards.drop(i)
-    (copy(cards = cards.take(i) ++ cut.tail), cut.headOption)
+  def pickCard(i: Int): (Deck, Option[Card]) = cards match {
+    case Nil => (this, None)
+    case _ =>
+      val cut = cards drop i
+      (copy(cards = (cards take i) ++ cut.tail), cut.headOption)
   }
 
   def remaining: Int = cards.length

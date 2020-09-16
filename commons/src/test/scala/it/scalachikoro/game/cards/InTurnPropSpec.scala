@@ -4,7 +4,7 @@ import org.scalatest.matchers.should
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor3}
 import org.scalatest.propspec.AnyPropSpec
 
-class inTurnPropSpec
+class InTurnPropSpec
   extends AnyPropSpec
     with TableDrivenPropertyChecks
     with should.Matchers {

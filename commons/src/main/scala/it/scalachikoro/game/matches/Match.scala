@@ -5,8 +5,6 @@ import java.security.SecureRandom
 import it.scalachikoro.game.cards.{Card, Deck}
 import it.scalachikoro.game.players.PlayerKoro
 
-import scala.util.Random
-
 case class Match(players: Seq[PlayerKoro], deck: Deck) {
   def acquireCard(card: Card, id: String): Match = {
     val p = players.find(_.id == id).exists(_.canAcquire(card))
@@ -16,15 +14,15 @@ case class Match(players: Seq[PlayerKoro], deck: Deck) {
       this
   }
 
-  private def getSecureRandom(): Int = {
+  private def getSecureRandom: Int = {
     val r:SecureRandom = new SecureRandom()
     val seed = r.generateSeed(32)
     r.nextBytes(seed)
-    seed.
+    seed.hashCode() % 6 + 1
   }
 
   def rollDice(n: Int, id: String): (Match, Int) = {
-    val roll = (0 to n).fold(0)((acc, _) => acc + Random.nextInt(6) + 1)
+    val roll = (0 to n).fold(0)((acc, _) => acc + getSecureRandom)
     val newPlayers = players.foldLeft(Seq.empty[PlayerKoro]) { (acc, i) => {
       val inTurn = i.id == id
       val gain = i.boardCards.foldLeft(0)((acc, i) => acc + i.trigger(roll, inTurn))
