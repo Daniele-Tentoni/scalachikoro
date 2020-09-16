@@ -42,7 +42,6 @@ jobs:
       scala:
         - 2.12.12
       jdk:
-        - openjdk11
         - openjdk14
     - os: linux
       dist: xenial
