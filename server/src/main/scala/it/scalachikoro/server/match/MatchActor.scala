@@ -42,9 +42,9 @@ class MatchActor(playersNumber: Int) extends Actor {
   private def initializeGame(players: Seq[PlayerKoro]): Unit = {
     game = Match(players)
     broadcastMessage(turn.all.map(_.actorRef), GameState(game))
-    turn.getTurn.actorRef ! PlayerTurn
-    broadcastMessage(turn.all.filterNot(_ == turn.getTurn).map(_.actorRef), OpponentTurn(turn.getTurn))
-    context.become(inTurn(game, turn.getTurn) orElse terminate)
+    turn.get.actorRef ! PlayerTurn
+    broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
+    context.become(inTurn(game, turn.get) orElse terminate)
   }
 
   private def inTurn(value: Match, ref: PlayerRef): Receive = {
@@ -52,7 +52,7 @@ class MatchActor(playersNumber: Int) extends Actor {
       val newState = value.rollDice(n, ref.id)
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(newState._2))
       // TODO: Give and Receive moneys.
-      context.become(inTurn(newState._1, turn.getTurn) orElse terminate)
+      context.become(inTurn(newState._1, turn.get) orElse terminate)
     case Acquire(card) if ref.actorRef == sender =>
       val newState = value.acquireCard(card, ref.id)
       // TODO: Check if player have acquired the card.
@@ -64,8 +64,8 @@ class MatchActor(playersNumber: Int) extends Actor {
   }
 
   private def nextTurn(): Unit = {
-    turn.nextTurn.actorRef ! PlayerTurn
-    broadcastMessage(turn.all.filterNot(_ == turn.getTurn).map(_.actorRef), OpponentTurn(turn.getTurn))
+    turn.next.actorRef ! PlayerTurn
+    broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
   }
 
   private def terminate: Receive = ???

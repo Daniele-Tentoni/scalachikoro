@@ -1,5 +1,7 @@
 package it.scalachikoro.game.matches
 
+import java.security.SecureRandom
+
 import it.scalachikoro.game.cards.{Card, Deck}
 import it.scalachikoro.game.players.PlayerKoro
 
@@ -12,6 +14,13 @@ case class Match(players: Seq[PlayerKoro], deck: Deck) {
       copy(players = players.map(m => if (m.id == id) m.acquire(card) else m), deck.copy(cards = deck.cards filterNot (_ == card)))
     else
       this
+  }
+
+  private def getSecureRandom(): Int = {
+    val r:SecureRandom = new SecureRandom()
+    val seed = r.generateSeed(32)
+    r.nextBytes(seed)
+    seed.
   }
 
   def rollDice(n: Int, id: String): (Match, Int) = {

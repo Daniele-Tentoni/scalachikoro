@@ -12,20 +12,20 @@ class TurnSpec extends AnyWordSpec  with Matchers{
         assertResult(ints)(turn.all)
       }
       "start at first int" in {
-        assertResult(ints.head)(turn.getTurn)
+        assertResult(ints.head)(turn.get)
       }
     }
     "already started" should {
       "go to next turn" in {
-        assertResult(ints(1))(turn.nextTurn)
+        assertResult(ints(1))(turn.next)
       }
       "another time" in {
-        assertResult(ints(2))(turn.nextTurn)
+        assertResult(ints(2))(turn.next)
       }
     }
     "at the end" should {
       "restart" in {
-        assertResult(ints.head)(turn.nextTurn)
+        assertResult(ints.head)(turn.next)
       }
     }
   }

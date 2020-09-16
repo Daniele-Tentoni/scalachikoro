@@ -1,9 +1,9 @@
 package it.scalachikoro.game.matches
 
 trait Turn[T] {
-  def getTurn: T
+  def get: T
 
-  def nextTurn: T
+  def next: T
 
   def all: Seq[T]
 }
@@ -14,11 +14,11 @@ object Turn {
   private class TurnImpl[T](items: Seq[T]) extends Turn[T] {
     private var index = 0
 
-    override def getTurn: T = items(index)
+    override def get: T = items(index)
 
-    override def nextTurn: T = {
+    override def next: T = {
       index = (index + 1) % items.size
-      getTurn
+      get
     }
 
     override def all: Seq[T] = items
