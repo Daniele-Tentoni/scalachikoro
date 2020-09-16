@@ -1,5 +1,9 @@
 package it.scalachikoro.messages
 
+import it.scalachikoro.game.cards.Card
+import it.scalachikoro.game.matches.Match
+import it.scalachikoro.game.players.PlayerRef
+
 object LobbyMessages {
 
   case class Hi(name: String)
@@ -11,5 +15,37 @@ object LobbyMessages {
   case class Leave(id: String)
 
   case class LeftQueue()
+
+}
+
+object GameMessages {
+
+  case class Start(players: Seq[PlayerRef])
+
+  case class MatchFound()
+
+  case class Ready(name: String)
+
+  case class GameState(state: Match)
+
+  case class PlayerTurn()
+
+  case class OpponentTurn(player: PlayerRef)
+
+  case class RollDice(n: Int)
+
+  case class DiceRolled(result: Int)
+
+  case class Receive(n: Int)
+
+  case class Give(n: Int, from: PlayerRef)
+
+  case class Acquire(card: Card)
+
+  case class Acquired(player: PlayerRef)
+
+  case class EndTurn()
+
+  case class PlayerWon(player: PlayerRef)
 
 }

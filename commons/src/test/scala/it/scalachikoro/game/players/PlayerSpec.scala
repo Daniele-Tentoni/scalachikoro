@@ -1,11 +1,11 @@
-package it.scalachikoro.commons.players
+package it.scalachikoro.game.players
 
-import it.scalachikoro.commons.cards.BoardCard
+import it.scalachikoro.game.cards.Card
 import org.scalatest.funspec.AnyFunSpec
 
 class PlayerSpec extends AnyFunSpec {
   describe("A Player") {
-    val player = PlayerKoro("Test", "1", 0, Seq.empty[BoardCard])
+    val player = PlayerKoro("Test", "1", 0, Seq.empty[Card])
     val more = player.receive(4)
     val less = more.give(2)
     val nothing = less._1.give(3)

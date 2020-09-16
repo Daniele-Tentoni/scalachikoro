@@ -1,13 +1,13 @@
-package it.scalachikoro.commons.cards
+package it.scalachikoro.game.cards
 
 import org.scalatest.matchers.should
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor3}
 import org.scalatest.propspec.AnyPropSpec
 
 class inTurnPropSpec
-extends AnyPropSpec
-with TableDrivenPropertyChecks
-with should.Matchers{
+  extends AnyPropSpec
+    with TableDrivenPropertyChecks
+    with should.Matchers {
   val inTurns: TableFor3[Int, Boolean, Boolean] = Table(
     ("code", "turn", "res"),
     (0, true, true),

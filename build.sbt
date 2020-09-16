@@ -5,11 +5,12 @@ version := "0.1.0"
 scalaVersion := "2.10.3"
 
 val akkaV = "2.5.13"
+val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % akkaV
 val akkaRemote = "com.typesafe.akka" %% "akka-remote" % akkaV
 val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaV
 val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % akkaV % Test
 
-val akkaDependencies = Seq(akkaRemote, akkaActor, akkaTestKit)
+val akkaDependencies = Seq(akkaTyped, akkaRemote, akkaActor, akkaTestKit)
 
 val scalactic = "org.scalactic" %% "scalactic" % "3.2.0"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
@@ -55,7 +56,7 @@ lazy val commons = Project(
   base = file("commons"))
   .settings(
     name := "commons",
-    libraryDependencies ++= testDependencies
+    libraryDependencies ++= (testDependencies :+ akkaTyped)
   )
 
 lazy val server = Project(

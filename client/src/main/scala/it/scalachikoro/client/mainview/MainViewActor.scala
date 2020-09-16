@@ -18,7 +18,7 @@ class MainViewActor extends Actor {
   def receive: Receive = {
     case Hi(name) =>
       println(f"$name said Hi!")
-      
+
     case Queued(id) =>
       println(f"We are queue with id: $id.")
       print("What you wanna do now? ")

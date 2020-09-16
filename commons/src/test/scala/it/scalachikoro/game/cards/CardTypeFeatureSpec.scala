@@ -1,4 +1,4 @@
-package it.scalachikoro.commons.cards
+package it.scalachikoro.game.cards
 
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
