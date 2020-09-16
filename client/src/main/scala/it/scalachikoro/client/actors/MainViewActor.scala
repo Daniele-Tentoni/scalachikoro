@@ -17,7 +17,7 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends Actor
       server = Some(ref)
       println(f"$ref said Hi!")
       withServerLobby{serverRef => serverRef ! WannaQueue(name)}
-      // listener.welcomed(name)
+      listener.welcomed(name)
 
     case Queued(id) =>
       println(f"We are queue with id: $id.")
