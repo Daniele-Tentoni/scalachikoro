@@ -36,8 +36,6 @@ class LobbyActor extends Actor {
     case _ => println(f"${sender.path.name} send an unknown message.")
   }
 
-  override def preStart(): Unit = super.preStart() // TODO: Start to fetch for matches.
-
   private def checkAndCreateGame(): Unit = {
     val p = lobby.getItems(4)
     p._2 match {
@@ -50,4 +48,6 @@ class LobbyActor extends Actor {
     val matchActor = context.actorOf(MatchActor.props(players.size))
     matchActor ! Start(players)
   }
+
+  println(f"Server is listening on ${self.path}")
 }

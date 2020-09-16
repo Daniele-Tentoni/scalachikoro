@@ -1,32 +1,35 @@
-package it.scalachikoro.client.mainview
+package it.scalachikoro.client.actors
 
 import akka.actor.{Actor, ActorRef, Props}
 import it.scalachikoro.constants.ActorConstants.LOBBY_ACTOR_NAME
-import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued}
+import it.scalachikoro.messages.GameMessages.MatchFound
+import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued, WannaQueue}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 
 object MainViewActor {
-  def props(): Props = Props(new MainViewActor())
+  def props(name: String): Props = Props(new MainViewActor(name))
 }
 
-class MainViewActor extends Actor {
+class MainViewActor(name: String) extends Actor {
   var server: Option[ActorRef] = Option.empty
 
   def receive: Receive = {
     case Hi(name) =>
       println(f"$name said Hi!")
+      sender ! WannaQueue(this.name)
 
     case Queued(id) =>
       println(f"We are queue with id: $id.")
       print("What you wanna do now? ")
-      val action = askForAction()
-      if (action == "leave")
-        withServerLobby {
-          _ ! Leave(id)
-        }
+      withServerLobby {
+        _ ! Leave(id)
+      }
+
+    case MatchFound() =>
+      context.actorOf(GameActor.props(name, sender))
 
     case LeftQueue() =>
       println(f"We've left the queue.")
@@ -34,8 +37,6 @@ class MainViewActor extends Actor {
     case _ =>
       println("Received an unknown message.")
   }
-
-  def askForAction(): String = scala.io.StdIn.readLine()
 
   private def withServerLobby(f: ActorRef => Unit): Unit = server match {
     case Some(ref) => f(ref)
@@ -48,8 +49,6 @@ class MainViewActor extends Actor {
     case Success(ref: ActorRef) =>
       server = Option(ref)
       println(f"Located Server actor: $server.")
-      print("Write your name: ")
-      val name = askForAction()
       withServerLobby {
         _ ! Hi(name)
       }

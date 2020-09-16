@@ -33,8 +33,10 @@ class MatchActor(playersNumber: Int) extends Actor {
       if (updated.length == playersNumber) {
         println("Start game")
         initializeGame(updated)
-      } else
+      } else {
+        println(f"Initialized by ${updated.size}")
         context.become(initializing(updated) orElse (terminate))
+      }
   }
 
   private def initializeGame(players: Seq[PlayerKoro]): Unit = {

@@ -13,5 +13,5 @@ class StartupController extends Controller {
     })
   }
 
-  override def stop(): Unit = {}
+  override def stop(): Unit = println(f"Startup Controller stopped.")
 }

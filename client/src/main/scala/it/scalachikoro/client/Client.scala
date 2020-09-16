@@ -6,6 +6,4 @@ import scalafx.application.JFXApp
 object Client extends JFXApp {
   val c = new MainController()
   c.start(this)
-  /* val client = ActorSystem("Client")
-  client.actorOf(MainViewActor.props()) */
 }

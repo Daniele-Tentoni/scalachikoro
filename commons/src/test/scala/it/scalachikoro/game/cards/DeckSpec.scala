@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class DeckSpec extends AnyWordSpec with Matchers {
   "A Deck" when {
-    "when created" should {
+    "created" should {
       "have all cards" in {
         assertResult(Deck(Card.all))(Deck.sorted)
       }
