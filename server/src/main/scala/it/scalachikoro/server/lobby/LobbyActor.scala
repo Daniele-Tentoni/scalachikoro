@@ -17,27 +17,27 @@ class LobbyActor extends Actor {
   var lobby: Lobby[PlayerRef] = PlayersLobby(Seq.empty)
 
   def receive: Receive = {
-    case Hi(name) =>
-      println(f"$name say Hi to us.")
-      sender ! Hi("Server")
+    case Hi(name, ref) =>
+      println(f"${ref.path} with $name say Hi to ${self.path}.")
+      ref ! Hi("Server", self)
 
     case WannaQueue(name) =>
-      println(f"$name wanna queue.")
+      println(f"${sender.path} with $name wanna queue.")
       val p = LobbyActor.player(name, sender)
       lobby = lobby + p
       sender ! Queued(p.id)
       checkAndCreateGame()
 
     case Leave(id) =>
-      println(f"Player $id wanna leave the queue.")
+      println(f"${sender.path} with $id wanna leave the queue.")
       lobby = lobby - id
       sender ! LeftQueue()
 
-    case _ => println(f"${sender.path.name} send an unknown message.")
+    case _ => println(f"${sender.path} send an unknown message.")
   }
 
   private def checkAndCreateGame(): Unit = {
-    val p = lobby.getItems(4)
+    val p = lobby.getItems(1)
     p._2 match {
       case Some(value) => generateMatchActor(value)
       case _ =>

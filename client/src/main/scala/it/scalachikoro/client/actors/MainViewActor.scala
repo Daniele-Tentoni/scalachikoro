@@ -1,38 +1,40 @@
 package it.scalachikoro.client.actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import it.scalachikoro.constants.ActorConstants.LOBBY_ACTOR_NAME
-import it.scalachikoro.messages.GameMessages.MatchFound
-import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, LeftQueue, Queued, WannaQueue}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
+import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.messages.GameMessages.{MatchFound, Start}
+import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, WannaQueue}
 
 object MainViewActor {
-  def props(name: String): Props = Props(new MainViewActor(name))
+  def props(name: String, listener: MainViewActorListener): Props = Props(new MainViewActor(name, listener))
 }
 
-class MainViewActor(name: String) extends Actor {
+class MainViewActor(name: String, listener: MainViewActorListener) extends Actor {
   var server: Option[ActorRef] = Option.empty
 
   def receive: Receive = {
-    case Hi(name) =>
-      println(f"$name said Hi!")
-      sender ! WannaQueue(this.name)
+    case Hi(name, ref) =>
+      server = Some(ref)
+      println(f"$ref said Hi!")
+      withServerLobby{serverRef => serverRef ! WannaQueue(name)}
+      // listener.welcomed(name)
 
     case Queued(id) =>
       println(f"We are queue with id: $id.")
-      print("What you wanna do now? ")
-      withServerLobby {
-        _ ! Leave(id)
-      }
-
-    case MatchFound() =>
-      context.actorOf(GameActor.props(name, sender))
+      listener.queued(name)
 
     case LeftQueue() =>
       println(f"We've left the queue.")
+      listener.left(name)
+
+    case MatchFound() =>
+      println("Match found")
+      listener.matchFound(name)
+
+    case Start(players) =>
+      println(f"Start message received with $players")
+      context.actorOf(GameActor.props(name, sender))
+    // TODO: Generate new view.
 
     case _ =>
       println("Received an unknown message.")
@@ -40,21 +42,10 @@ class MainViewActor(name: String) extends Actor {
 
   private def withServerLobby(f: ActorRef => Unit): Unit = server match {
     case Some(ref) => f(ref)
-    case None => println("No server found.")
-  }
-
-  // This is the constructor section. Find where the server is located and send a first message.
-  val path = f"akka.tcp://Server@127.0.0.1:47000/user/$LOBBY_ACTOR_NAME"
-  context.system.actorSelection(path).resolveOne()(10.seconds) onComplete {
-    case Success(ref: ActorRef) =>
-      server = Option(ref)
-      println(f"Located Server actor: $server.")
-      withServerLobby {
-        _ ! Hi(name)
-      }
-
-    case Failure(t) =>
-      System.err.println(f"Failed to locate Server actor. Reason: $t")
+    case None =>
+      System.err.println(
+        f"""***********************************************
+           |No server found.""")
       context.system.terminate()
   }
 }

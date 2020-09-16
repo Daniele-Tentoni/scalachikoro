@@ -14,8 +14,9 @@ val akkaDependencies = Seq(akkaTyped, akkaRemote, akkaActor, akkaTestKit)
 
 val scalactic = "org.scalactic" %% "scalactic" % "3.2.0"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
+val scalamock = "org.scalamock" %% "scalamock" % "4.4.0" % Test
 
-val testDependencies = Seq(scalactic, scalaTest)
+val testDependencies = Seq(scalactic, scalaTest, scalamock)
 
 // val junit = "junit" % "junit" % "4.12"
 // val cukeCore = "io.cucumber" %% "cucumber-core" % "2.0.1" % Test
@@ -65,7 +66,7 @@ lazy val server = Project(
   .enablePlugins(PackPlugin)
   .settings(
     name := "server",
-    libraryDependencies ++= akkaDependencies
+    libraryDependencies ++= (akkaDependencies ++ testDependencies)
   ).dependsOn(commons)
 
 lazy val client = Project(
@@ -74,5 +75,5 @@ lazy val client = Project(
   .enablePlugins(PackPlugin)
   .settings(
     name := "client",
-    libraryDependencies ++= (akkaDependencies ++ (scalaFXDep :+ scalafx))
+    libraryDependencies ++= (akkaDependencies ++ (scalaFXDep :+ scalafx) ++ testDependencies)
   ).dependsOn(commons)

@@ -1,9 +1,12 @@
 package it.scalachikoro.server.`match`
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorRef, PoisonPill, Props, Terminated}
 import it.scalachikoro.game.matches.{Match, Turn}
 import it.scalachikoro.game.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
 
 object MatchActor {
   def props(playersNumber: Int): Props = Props(new MatchActor(playersNumber))
@@ -68,7 +71,23 @@ class MatchActor(playersNumber: Int) extends Actor {
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
   }
 
-  private def terminate: Receive = ???
+  private def terminate: Receive = {
+    case Terminated(ref) =>
+      turn.all.find(_.actorRef == ref) match {
+        case Some(player) =>
+          System.err.println(f"Player ${player.name} terminated.")
+          broadcastMessage(turn.all.filterNot(_.actorRef == ref).map(_.actorRef), Drop()) // TODO: Change message.
+          context.system.scheduler.scheduleOnce(20.second) {
+            System.err.println(f"Terminating game actor...")
+            self ! PoisonPill
+          }
+        case _ => System.err.println(f"Client with ${ref.path} not found.");
+      }
+  }
+
+  private def gameEnded(): Receive = {
+    case _ => sender ! Drop() // TODO: Change this message.
+  }
 
   private def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs.foreach(_ ! message)
 }

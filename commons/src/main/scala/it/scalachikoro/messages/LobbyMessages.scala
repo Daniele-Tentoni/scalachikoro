@@ -1,12 +1,13 @@
 package it.scalachikoro.messages
 
+import akka.actor.ActorRef
 import it.scalachikoro.game.cards.Card
 import it.scalachikoro.game.matches.Match
 import it.scalachikoro.game.players.PlayerRef
 
 object LobbyMessages {
 
-  case class Hi(name: String)
+  case class Hi(name: String, ref: ActorRef)
 
   case class WannaQueue(name: String)
 
@@ -20,9 +21,13 @@ object LobbyMessages {
 
 object GameMessages {
 
-  case class Start(players: Seq[PlayerRef])
-
   case class MatchFound()
+
+  case class Accept()
+
+  case class Drop()
+
+  case class Start(players: Seq[PlayerRef])
 
   case class Ready(name: String)
 

@@ -1,6 +1,6 @@
 package it.scalachikoro.client.controllers
 
-import it.scalachikoro.client.views.View
+import akka.actor.ActorSystem
 import scalafx.application.JFXApp
 
 trait Controller {
@@ -10,10 +10,11 @@ trait Controller {
 }
 
 class MainController() extends Controller {
-  private val startup = new StartupController
+  val client: ActorSystem = ActorSystem("Client")
+  private val startup = new StartupController(client)
 
   override def start(app: JFXApp): Unit = {
-    val view = new View(app)
+    // val view = new View(app, startup)
     startup.start(app)
   }
 
