@@ -87,7 +87,7 @@ object Card {
 
   def FruitMarket: Card = Card("Fruit and Vegetable Market", 1, SecondaryIndustry(Seq(11, 12)), 6)
 
-  def Cafe: Card = Card("Café", 1, Restaurants(Seq(3)), 6)
+  def Cafe: Card = Card("Cafe'", 1, Restaurants(Seq(3)), 6)
 
   def FamilyRest: Card = Card("Family Restaurant", 1, Restaurants(Seq(9, 10)), 6)
 
