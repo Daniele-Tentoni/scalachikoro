@@ -1,6 +1,6 @@
 package it.scalachikoro.client.actors
 
-import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
+import akka.actor.{PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
 import it.scalachikoro.client.controllers.MainViewActorListener
 import it.scalachikoro.messages.GameMessages.{Drop, GameFound, Start}
@@ -14,15 +14,16 @@ object MainViewActor {
 }
 
 class MainViewActor(name: String, listener: MainViewActorListener) extends MyActor {
-  var server: Option[ActorRef] = Option.empty
-
   def receive: Receive = lobby
 
   def lobby: Receive = {
     case Hi(name, ref) =>
-      server = Some(ref)
+      context.become(discovered orElse terminated)
       println(f"$ref said Hi!")
       listener.welcomed(name)
+  }
+
+  def discovered(): Receive = {
     case Queued(id) =>
       println(f"We are queue with id: $id.")
       listener.queued(name)
