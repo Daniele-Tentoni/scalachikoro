@@ -8,5 +8,5 @@ abstract class MyActor extends Actor{
     case _ =>
   }
 
-  protected def log(m: String): Unit = println(f"[${System.currentTimeMillis()}][${self.path}]$m")
+  protected def log(m: String): Unit = println(f"[${System.currentTimeMillis()}][${self.path}] $m")
 }

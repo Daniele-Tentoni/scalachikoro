@@ -2,8 +2,8 @@ package it.scalachikoro.client.controllers
 
 import akka.actor.{ActorRef, ActorSystem}
 import it.scalachikoro.client.actors.MainViewActor
-import it.scalachikoro.client.views.KoroAlert
 import it.scalachikoro.client.views.stages.StartupStage
+import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.constants.ActorConstants.LobbyActorName
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
 import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, WannaQueue}
@@ -46,12 +46,12 @@ trait MainViewActorListener {
   /**
    * Say to server to leave the queue.
    */
-  def leave()
+  def leaveQueue()
 
   /**
    * Return the response of a queue left.
    */
-  def left(name: String)
+  def queueLeft(name: String)
 
   /**
    * Return the response of a match found.
@@ -63,20 +63,34 @@ trait MainViewActorListener {
    *
    * @param response Response to the game call.
    */
-  def accepted(name: String, response: Boolean, gameRef: ActorRef)
+  def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef)
+
+  // TODO: Add a comment to this.
+  def gameStarted()
 }
 
-class StartupController(system: ActorSystem) extends Controller with MainViewActorListener {
+// TODO: Add a comment to this.
+class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
   private var startUpStage: StartupStage = _
   var serverLobbyRef: Option[ActorRef] = None
   var startupActor: ActorRef = _
+  val gameController = new GameController(system, app)
 
-  override def start(app: JFXApp): Unit = Platform.runLater {
+  /**
+   * @inheritdoc
+   */
+  override def start(): Unit = Platform.runLater {
     startUpStage = StartupStage(this)
     app.stage = startUpStage
   }
 
-  override def stop(): Unit = println(f"Startup Controller stopped.")
+  /**
+   * @inheritdoc
+   */
+  override def stop(): Unit = {
+    gameController.stop()
+    println(f"Startup Controller stopped.")
+  }
 
   override def hi(name: String): Unit = {
     println("Starting main view actor.")
@@ -111,9 +125,9 @@ class StartupController(system: ActorSystem) extends Controller with MainViewAct
   /**
    * @inheritdoc
    */
-  override def leave(): Unit = withServerLobbyRef { ref => ref ! Leave("1") }
+  override def leaveQueue(): Unit = withServerLobbyRef { ref => ref ! Leave("1") }
 
-  override def left(name: String): Unit = Platform.runLater {
+  override def queueLeft(name: String): Unit = Platform.runLater {
     KoroAlert.info("Sad", "I'm sad.") showAndWait()
   }
 
@@ -121,10 +135,10 @@ class StartupController(system: ActorSystem) extends Controller with MainViewAct
     val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
 
     // React to user's selection.
-    accepted(name, alert.contains(ButtonType.OK), gameRef)
+    inviteAccepted(name, alert.contains(ButtonType.OK), gameRef)
   }
 
-  override def accepted(name: String, response: Boolean, gameRef: ActorRef): Unit = withServerLobbyRef { ref =>
+  override def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef): Unit = withServerLobbyRef { ref =>
     if (response)
       gameRef ! Accept(name)
     else
@@ -136,5 +150,10 @@ class StartupController(system: ActorSystem) extends Controller with MainViewAct
       case Some(ref) => f(ref)
       case None => println(f"No server actor.")
     }
+  }
+
+  override def gameStarted(): Unit = {
+    gameController.start()
+    println("GameController started.")
   }
 }

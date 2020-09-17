@@ -5,13 +5,15 @@ import it.scalachikoro.client.views.stages.scenes.StartupScene
 
 trait StartupStage extends BaseStage
 
-class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
-  private val mainScene = new StartupScene(listener)
-
-  scene = mainScene
-  onCloseRequest = _ => { System.exit(0) }
-}
-
 object StartupStage {
+
+  // TODO: Document this.
+  private class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
+    private val mainScene = new StartupScene(listener)
+
+    scene = mainScene
+    onCloseRequest = _ => System.exit(0)
+  }
+
   def apply(listener: MainViewActorListener): StartupStage = new StartupStageImpl(listener)
 }

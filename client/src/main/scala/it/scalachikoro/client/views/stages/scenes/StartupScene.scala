@@ -1,13 +1,14 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.client.views.KoroAlert
+import it.scalachikoro.client.views.utils.KoroAlert
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, Label, TextField}
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 
+// TODO: Create the companion object.
 class StartupScene(listener: MainViewActorListener) extends Scene() {
   // TODO: Add a background.
 
@@ -59,5 +60,5 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
     }
   }
 
-  private def leave(): Unit = listener.leave()
+  private def leave(): Unit = listener.leaveQueue()
 }

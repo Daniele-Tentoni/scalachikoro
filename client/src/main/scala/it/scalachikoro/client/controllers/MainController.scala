@@ -3,20 +3,23 @@ package it.scalachikoro.client.controllers
 import akka.actor.ActorSystem
 import scalafx.application.JFXApp
 
-trait Controller {
-  def start(app: JFXApp): Unit
-
-  def stop(): Unit
-}
-
-class MainController() extends Controller {
+class MainController(app: JFXApp) extends Controller {
   val client: ActorSystem = ActorSystem("Client")
-  private val startup = new StartupController(client)
+  val startup = new StartupController(client, app)
 
-  override def start(app: JFXApp): Unit = {
-    // val view = new View(app, startup)
-    startup.start(app)
+  /**
+   * @inheritdoc
+   */
+  override def start(): Unit = {
+    startup.start()
+    println("MainController started.")
   }
 
-  override def stop(): Unit = println("Controller ended.")
+  /**
+   * @inheritdoc
+   */
+  override def stop(): Unit = {
+    startup.stop()
+    println("MainController ended.")
+  }
 }

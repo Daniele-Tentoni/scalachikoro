@@ -39,7 +39,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on queue left" in {
       mockActor ! LeftQueue()
-      (mockListener.left _).verify(*).once()
+      (mockListener.queueLeft _).verify(*).once()
     }
 
     "notify the listener on Match Found" in {

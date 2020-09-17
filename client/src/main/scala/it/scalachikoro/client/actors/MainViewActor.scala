@@ -32,7 +32,7 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
   def queued: Receive = {
     case LeftQueue() =>
       println(f"We've left the queue.")
-      listener.left(name)
+      listener.queueLeft(name)
 
     case MatchFound() =>
       println("Match found")

@@ -1,4 +1,4 @@
-package it.scalachikoro.client.views
+package it.scalachikoro.client.views.utils
 
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
