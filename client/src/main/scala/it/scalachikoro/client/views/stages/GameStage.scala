@@ -8,7 +8,7 @@ trait GameStage extends BaseStage
 object GameStage {
 
   private class GameStageImpl(listener: GameEventListener) extends GameStage {
-    private val gameScene = new GameScene(listener)
+    private val gameScene = GameScene(listener)
 
     scene = gameScene
     onCloseRequest = _ => System.exit(0)

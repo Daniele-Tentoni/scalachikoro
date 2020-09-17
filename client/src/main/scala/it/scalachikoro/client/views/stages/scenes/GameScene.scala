@@ -1,5 +1,6 @@
 package it.scalachikoro.client.views.stages.scenes
 
+import it.scalachikoro.client.controllers.GameEventListener
 import it.scalachikoro.client.views.utils.KoroAlert
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.{Insets, Pos}
@@ -11,7 +12,7 @@ trait GameScene extends Scene
 
 object GameScene {
 
-  private class GameSceneImpl() extends GameScene {
+  private class GameSceneImpl(listener: GameEventListener) extends GameScene {
     // TODO: Add a background.
     val usernameLabel: Label = Label("Username")
     val usernameField: TextField = new TextField()
@@ -45,5 +46,5 @@ object GameScene {
     }
   }
 
-  def apply(): GameScene = new GameSceneImpl()
+  def apply(listener: GameEventListener): GameScene = new GameSceneImpl(listener)
 }
