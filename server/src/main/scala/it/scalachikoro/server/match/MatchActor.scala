@@ -22,6 +22,7 @@ class MatchActor(playersNumber: Int) extends MyActor {
   private def idle: Receive = {
     case Start(players) =>
       require(players.size == playersNumber)
+      println(f"Start a match with ${players.map(_.name)}. Waiting for their acceptance.")
       turn = Turn(players)
       broadcastMessage(players.map(_.actorRef), MatchFound())
       context.become(initializing(Seq.empty) orElse terminated)
@@ -30,16 +31,19 @@ class MatchActor(playersNumber: Int) extends MyActor {
   private def initializing(readyPlayers: Seq[PlayerKoro]): Receive = {
     case Accept(name) =>
       println(f"Player $name is ready")
-      val player = turn.all.find(_.actorRef == sender)
-      if (player.isEmpty)
+      val player = turn.all.find(_.name == name)
+      if (player.isEmpty) {
+        println(f"Player ${sender.path} with name $name didn't found.")
         terminated
-      val updated = readyPlayers :+ PlayerKoro.init(player.get.id, player.get.name)
-      if (updated.length == playersNumber) {
-        println("Start game")
-        initializeGame(updated)
       } else {
-        println(f"Initialized by ${updated.size}")
-        context.become(initializing(updated) orElse terminated)
+        val updated = readyPlayers :+ PlayerKoro.init(player.get.id, player.get.name)
+        if (updated.length == playersNumber) {
+          println("Start game")
+          initializeGame(updated)
+        } else {
+          println(f"Initialized by ${updated.size}, waiting for ${playersNumber - updated.size}")
+          context.become(initializing(updated) orElse terminated)
+        }
       }
     case Drop() =>
       context.become(terminated)
