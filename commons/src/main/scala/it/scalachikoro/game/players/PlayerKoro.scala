@@ -26,5 +26,5 @@ case class PlayerKoro(override val id: String, name: String, money: Int, boardCa
 }
 
 object PlayerKoro {
-  def init(id: String, name: String): PlayerKoro = new PlayerKoro(id, name, 0, Seq.empty)
+  def init(id: String, name: String): PlayerKoro = new PlayerKoro(id, name, 0, Card.starterCards)
 }

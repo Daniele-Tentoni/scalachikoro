@@ -44,7 +44,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on Match Found" in {
       mockActor ! MatchFound()
-      (mockListener.matchFound _).verify(*).once()
+      (mockListener.matchFound _).verify(*,*).once()
     }
 
     "notify the listener on Match Start" in {

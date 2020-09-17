@@ -1,6 +1,7 @@
 package it.scalachikoro.server.`match`
 
-import akka.actor.{Actor, ActorRef, PoisonPill, Props, Terminated}
+import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
+import it.scalachikoro.actors.MyActor
 import it.scalachikoro.game.matches.{Match, Turn}
 import it.scalachikoro.game.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
@@ -12,7 +13,7 @@ object MatchActor {
   def props(playersNumber: Int): Props = Props(new MatchActor(playersNumber))
 }
 
-class MatchActor(playersNumber: Int) extends Actor {
+class MatchActor(playersNumber: Int) extends MyActor {
   var game: Match = _
   var turn: Turn[PlayerRef] = _
 
@@ -23,23 +24,25 @@ class MatchActor(playersNumber: Int) extends Actor {
       require(players.size == playersNumber)
       turn = Turn(players)
       broadcastMessage(players.map(_.actorRef), MatchFound())
-      context.become(initializing(Seq.empty) orElse terminate)
+      context.become(initializing(Seq.empty) orElse terminated)
   }
 
   private def initializing(readyPlayers: Seq[PlayerKoro]): Receive = {
-    case Ready(name) =>
+    case Accept(name) =>
       println(f"Player $name is ready")
       val player = turn.all.find(_.actorRef == sender)
       if (player.isEmpty)
-        terminate
+        terminated
       val updated = readyPlayers :+ PlayerKoro.init(player.get.id, player.get.name)
       if (updated.length == playersNumber) {
         println("Start game")
         initializeGame(updated)
       } else {
         println(f"Initialized by ${updated.size}")
-        context.become(initializing(updated) orElse (terminate))
+        context.become(initializing(updated) orElse terminated)
       }
+    case Drop() =>
+      context.become(terminated)
   }
 
   private def initializeGame(players: Seq[PlayerKoro]): Unit = {
@@ -47,7 +50,7 @@ class MatchActor(playersNumber: Int) extends Actor {
     broadcastMessage(turn.all.map(_.actorRef), GameState(game))
     turn.get.actorRef ! PlayerTurn
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
-    context.become(inTurn(game, turn.get) orElse terminate)
+    context.become(inTurn(game, turn.get) orElse terminated)
   }
 
   private def inTurn(value: Match, ref: PlayerRef): Receive = {
@@ -55,7 +58,7 @@ class MatchActor(playersNumber: Int) extends Actor {
       val newState = value.rollDice(n, ref.id)
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(newState._2))
       // TODO: Give and Receive moneys.
-      context.become(inTurn(newState._1, turn.get) orElse terminate)
+      context.become(inTurn(newState._1, turn.get) orElse terminated)
     case Acquire(card) if ref.actorRef == sender =>
       val newState = value.acquireCard(card, ref.id)
       // TODO: Check if player have acquired the card.
@@ -71,7 +74,7 @@ class MatchActor(playersNumber: Int) extends Actor {
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
   }
 
-  private def terminate: Receive = {
+  private def terminated: Receive = {
     case Terminated(ref) =>
       turn.all.find(_.actorRef == ref) match {
         case Some(player) =>

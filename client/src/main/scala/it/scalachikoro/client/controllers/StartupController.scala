@@ -56,14 +56,14 @@ trait MainViewActorListener {
   /**
    * Return the response of a match found.
    */
-  def matchFound(name: String)
+  def matchFound(name: String, gameRef: ActorRef)
 
   /**
    * Say to server the response to the game call.
    *
    * @param response Response to the game call.
    */
-  def accepted(response: Boolean)
+  def accepted(name: String, response: Boolean, gameRef: ActorRef)
 }
 
 class StartupController(system: ActorSystem) extends Controller with MainViewActorListener {
@@ -99,15 +99,13 @@ class StartupController(system: ActorSystem) extends Controller with MainViewAct
   }
 
   override def welcomed(name: String): Unit = Platform.runLater {
-    val alert = KoroAlert.info("Welcome", "You are welcome")
-    alert.showAndWait()
+    KoroAlert.info("Welcome", "You are welcome") showAndWait()
   }
 
-  override def queue(name: String): Unit = withServerLobbyRef { ref => ref ! WannaQueue(name) }
+  override def queue(name: String): Unit = withServerLobbyRef { serverRef => serverRef ! WannaQueue(name, startupActor) }
 
   override def queued(name: String): Unit = Platform.runLater {
-    val alert = KoroAlert.info("Queued", "You are now in queue")
-    alert.showAndWait()
+    KoroAlert.info("Queued", "You are now in queue") showAndWait()
   }
 
   /**
@@ -116,23 +114,21 @@ class StartupController(system: ActorSystem) extends Controller with MainViewAct
   override def leave(): Unit = withServerLobbyRef { ref => ref ! Leave("1") }
 
   override def left(name: String): Unit = Platform.runLater {
-    val alert = KoroAlert.info("Sad", "I'm sad.")
-    alert.showAndWait()
+    KoroAlert.info("Sad", "I'm sad.") showAndWait()
   }
 
-  override def matchFound(name: String): Unit = Platform.runLater {
-    val alert = KoroAlert.confirmation("Wanna join", "You really wanna join")
-    val result = alert.showAndWait()
+  override def matchFound(name: String, gameRef: ActorRef): Unit = Platform.runLater {
+    val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
 
     // React to user's selection.
-    accepted(result.contains(ButtonType.OK))
+    accepted(name, alert.contains(ButtonType.OK), gameRef)
   }
 
-  override def accepted(response: Boolean): Unit = withServerLobbyRef { ref =>
+  override def accepted(name: String, response: Boolean, gameRef: ActorRef): Unit = withServerLobbyRef { ref =>
     if (response)
-      ref ! Accept()
+      gameRef ! Accept(name)
     else
-      ref ! Drop()
+      gameRef ! Drop()
   }
 
   private def withServerLobbyRef(f: ActorRef => Unit): Unit = {

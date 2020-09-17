@@ -9,7 +9,7 @@ object LobbyMessages {
 
   case class Hi(name: String, ref: ActorRef)
 
-  case class WannaQueue(name: String)
+  case class WannaQueue(name: String, ref: ActorRef)
 
   case class Queued(id: String)
 
@@ -23,7 +23,7 @@ object GameMessages {
 
   case class MatchFound()
 
-  case class Accept()
+  case class Accept(name: String)
 
   case class Drop()
 

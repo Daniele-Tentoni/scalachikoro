@@ -1,51 +1,63 @@
 package it.scalachikoro.client.actors
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
+import it.scalachikoro.actors.MyActor
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{MatchFound, Start}
-import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, WannaQueue}
+import it.scalachikoro.messages.GameMessages.{Drop, MatchFound, Start}
+import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
 
 object MainViewActor {
   def props(name: String, listener: MainViewActorListener): Props = Props(new MainViewActor(name, listener))
 }
 
-class MainViewActor(name: String, listener: MainViewActorListener) extends Actor {
+class MainViewActor(name: String, listener: MainViewActorListener) extends MyActor {
   var server: Option[ActorRef] = Option.empty
 
-  def receive: Receive = {
+  def receive: Receive = lobby
+
+  def lobby: Receive = {
     case Hi(name, ref) =>
       server = Some(ref)
       println(f"$ref said Hi!")
-      withServerLobby{serverRef => serverRef ! WannaQueue(name)}
       listener.welcomed(name)
-
     case Queued(id) =>
       println(f"We are queue with id: $id.")
       listener.queued(name)
+      context.become(queued orElse terminated)
+  }
 
+  def queued: Receive = {
     case LeftQueue() =>
       println(f"We've left the queue.")
       listener.left(name)
 
     case MatchFound() =>
       println("Match found")
-      listener.matchFound(name)
+      listener.matchFound(name, sender)
 
     case Start(players) =>
       println(f"Start message received with $players")
-      context.actorOf(GameActor.props(name, sender))
+      context.become(inactive)
     // TODO: Generate new view.
 
-    case _ =>
-      println("Received an unknown message.")
+    case Drop() =>
+    // TODO: Drop the game and return to not in queue.
   }
 
-  private def withServerLobby(f: ActorRef => Unit): Unit = server match {
-    case Some(ref) => f(ref)
-    case None =>
-      System.err.println(
-        f"""***********************************************
-           |No server found.""")
-      context.system.terminate()
+  def inactive: Receive = {
+    case _ => println("Received an unknown message.")
+  }
+
+  private def terminated: Receive = {
+    case Terminated(_) =>
+      System.err.println(f"Actor ${self.path} terminated.")
+      context.system.scheduler.scheduleOnce(20.second) {
+        System.err.println(f"Terminating main view actor...")
+        self ! PoisonPill
+      }
+    case _ => System.err.println(f"${sender.path} send an unknown message while ${self.path} is terminated.");
   }
 }
