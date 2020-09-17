@@ -17,11 +17,11 @@ jobs:
       os: linux
       dist: trusty
       scala:
-        - 2.12.12
+        - 2.10.7
       jdk:
         - openjdk11
     - os: linux
-      dist: xenial
+      dist: trusty
       scala:
         - 2.12.12
       jdk:
@@ -31,13 +31,7 @@ jobs:
       scala:
         - 2.10.3
       jdk:
-        - openjdk11
-    - os: linux
-      dist: xenial
-      scala:
-        - 2.10.3
-      jdk:
-        - openjdk11
+        - openjdk14
     - os: linux
       dist: trusty
       scala:
@@ -47,19 +41,25 @@ jobs:
     - os: linux
       dist: xenial
       scala:
+        - 2.10.7
+      jdk:
+        - openjdk11
+    - os: linux
+      dist: xenial
+      scala:
         - 2.12.12
       jdk:
-        - openjdk14
+        - openjdk11
     - os: linux
-      dist: trusty
+      dist: xenial
       scala:
-        - 2.10.3
+        - 2.10.7
       jdk:
         - openjdk14
     - os: linux
       dist: xenial
       scala:
-        - 2.10.3
+        - 2.12.12
       jdk:
         - openjdk14
     # Build with MacOs systems.
@@ -68,32 +68,56 @@ jobs:
       osx_image:
         - xcode12
       scala:
-        - 2.12.8
-        - 2.13.1
+        - 2.10.7
       jdk:
         - openjdk14
     - os: osx
       osx_image:
         - xcode12
       scala:
-        - 2.12.8
-        - 2.13.1
+        - 2.10.7
+      jdk:
+        - openjdk11
+    - os: osx
+      osx_image:
+        - xcode12
+      scala:
+        - 2.12.12
+      jdk:
+        - openjdk14
+    - os: osx
+      osx_image:
+        - xcode12
+      scala:
+        - 2.12.12
       jdk:
         - openjdk11
     - os: osx
       osx_image:
         - xcode11
       scala:
-        - 2.12.8
-        - 2.13.1
+        - 2.10.7
       jdk:
         - openjdk14
     - os: osx
       osx_image:
         - xcode11
       scala:
-        - 2.12.8
-        - 2.13.1
+        - 2.10.7
+      jdk:
+        - openjdk11
+    - os: osx
+      osx_image:
+        - xcode11
+      scala:
+        - 2.12.12
+      jdk:
+        - openjdk14
+    - os: osx
+      osx_image:
+        - xcode11
+      scala:
+        - 2.12.12
       jdk:
         - openjdk11
     # Send test statistics to other services.
