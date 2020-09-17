@@ -71,7 +71,7 @@ trait MainViewActorListener {
 
 // TODO: Add a comment to this.
 class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
-  private var startUpStage: StartupStage = _
+  private val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
   var startupActor: ActorRef = _
   val gameController = new GameController(system, app)
@@ -80,7 +80,6 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    * @inheritdoc
    */
   override def start(): Unit = Platform.runLater {
-    startUpStage = StartupStage(this)
     app.stage = startUpStage
   }
 
@@ -138,12 +137,11 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     inviteAccepted(name, alert.contains(ButtonType.OK), gameRef)
   }
 
-  override def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef): Unit = withServerLobbyRef { ref =>
+  override def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef): Unit =
     if (response)
       gameRef ! Accept(name)
     else
       gameRef ! Drop()
-  }
 
   private def withServerLobbyRef(f: ActorRef => Unit): Unit = {
     this.serverLobbyRef match {
