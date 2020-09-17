@@ -1,4 +1,4 @@
-package it.scalachikoro.game.players
+package it.scalachikoro.koro.players
 
 import akka.actor.ActorRef
 

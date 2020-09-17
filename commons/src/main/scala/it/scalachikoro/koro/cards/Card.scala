@@ -1,7 +1,7 @@
-package it.scalachikoro.game.cards
+package it.scalachikoro.koro.cards
 
-import it.scalachikoro.game.cards.CardType._
-import it.scalachikoro.game.cards.InTurn.InTurnCode
+import it.scalachikoro.koro.cards.CardType._
+import it.scalachikoro.koro.cards.InTurn.InTurnCode
 
 sealed class InTurn(code: InTurnCode) {
   def check(turn: Boolean): Boolean =

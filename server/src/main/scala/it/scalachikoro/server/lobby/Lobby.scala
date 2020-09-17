@@ -1,6 +1,6 @@
 package it.scalachikoro.server.lobby
 
-import it.scalachikoro.game.players.PlayerRef
+import it.scalachikoro.koro.players.PlayerRef
 
 trait Lobby[T <: PlayerRef] {
   val items: Seq[T]

@@ -1,7 +1,7 @@
-package it.scalachikoro.game.players
+package it.scalachikoro.koro.players
 
-import it.scalachikoro.game.cards.{AimCard, Card}
-import it.scalachikoro.game.cards.CardType.PrimaryIndustry
+import it.scalachikoro.koro.cards.{AimCard, Card}
+import it.scalachikoro.koro.cards.CardType.PrimaryIndustry
 import org.scalatest.wordspec.AnyWordSpec
 
 class PlayerKoroSpec extends AnyWordSpec {

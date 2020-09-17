@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{MatchFound, Start}
+import it.scalachikoro.messages.GameMessages.{GameFound, Start}
 import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
@@ -20,6 +20,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
   private def provideListener = stub[MainViewActorListener]
 
   val name = "Test Actor"
+
   private def provideActorRef(listener: MainViewActorListener) = TestActorRef[MainViewActor](MainViewActor.props(name, listener))
 
   "A MainViewActor" should {
@@ -42,12 +43,12 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
       (mockListener.queueLeft _).verify(*).once()
     }
 
-    "notify the listener on Match Found" in {
-      mockActor ! MatchFound()
-      (mockListener.matchFound _).verify(*,*).once()
+    "notify the listener on Game Found" in {
+      mockActor ! GameFound()
+      (mockListener.matchFound _).verify(*, *).once()
     }
 
-    "notify the listener on Match Start" in {
+    "notify the listener on Game Start" in {
       mockActor ! Start(Seq.empty)
       pending
     }

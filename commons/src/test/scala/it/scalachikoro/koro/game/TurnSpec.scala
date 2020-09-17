@@ -1,9 +1,9 @@
-package it.scalachikoro.game.matches
+package it.scalachikoro.koro.game
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TurnSpec extends AnyWordSpec  with Matchers{
+class TurnSpec extends AnyWordSpec with Matchers {
   "A Turn" when {
     val ints: Seq[Int] = Seq(1, 2, 3)
     var turn: Turn[Int] = Turn(ints)

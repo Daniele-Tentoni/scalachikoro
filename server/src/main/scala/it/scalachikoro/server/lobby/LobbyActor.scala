@@ -2,11 +2,11 @@ package it.scalachikoro.server.lobby
 
 import akka.actor.{ActorRef, Props}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.game.players.PlayerRef
+import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.GameMessages.Start
 import it.scalachikoro.messages.LobbyMessages._
 import it.scalachikoro.server.MyIdGenerator
-import it.scalachikoro.server.`match`.MatchActor
+import it.scalachikoro.server.game.GameActor
 
 object LobbyActor {
   def props(): Props = Props(new LobbyActor())
@@ -43,15 +43,15 @@ class LobbyActor extends MyActor {
   private def checkAndCreateGame(): Unit = {
     val p = lobby.getItems(1)
     p._2 match {
-      case Some(value) => generateMatchActor(value)
+      case Some(value) => generateGameActor(value)
       case _ =>
     }
   }
 
-  private def generateMatchActor(players: Seq[PlayerRef]): Unit = {
-    val matchActor = context.actorOf(MatchActor.props(players.size))
+  private def generateGameActor(players: Seq[PlayerRef]): Unit = {
+    val matchActor = context.actorOf(GameActor.props(players.size))
     matchActor ! Start(players)
-    log(f"Start Match Actor with ${players.map(_.name)} players.")
+    log(f"Start Game Actor with ${players.map(_.name)} players.")
   }
 
   log(f"I'm listening")

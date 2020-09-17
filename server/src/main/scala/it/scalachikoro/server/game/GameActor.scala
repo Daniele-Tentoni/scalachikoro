@@ -1,20 +1,20 @@
-package it.scalachikoro.server.`match`
+package it.scalachikoro.server.game
 
 import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.game.matches.{Match, Turn}
-import it.scalachikoro.game.players.{PlayerKoro, PlayerRef}
+import it.scalachikoro.koro.game.{Game, Turn}
+import it.scalachikoro.koro.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
-object MatchActor {
-  def props(playersNumber: Int): Props = Props(new MatchActor(playersNumber))
+object GameActor {
+  def props(playersNumber: Int): Props = Props(new GameActor(playersNumber))
 }
 
-class MatchActor(playersNumber: Int) extends MyActor {
-  var game: Match = _
+class GameActor(playersNumber: Int) extends MyActor {
+  var game: Game = _
   var turn: Turn[PlayerRef] = _
 
   override def receive: Receive = idle
@@ -24,7 +24,7 @@ class MatchActor(playersNumber: Int) extends MyActor {
       require(players.size == playersNumber)
       println(f"Start a match with ${players.map(_.name)}. Waiting for their acceptance.")
       turn = Turn(players)
-      broadcastMessage(players.map(_.actorRef), MatchFound())
+      broadcastMessage(players.map(_.actorRef), GameFound())
       context.become(initializing(Seq.empty) orElse terminated)
   }
 
@@ -50,14 +50,14 @@ class MatchActor(playersNumber: Int) extends MyActor {
   }
 
   private def initializeGame(players: Seq[PlayerKoro]): Unit = {
-    game = Match(players)
+    game = Game(players)
     broadcastMessage(turn.all.map(_.actorRef), GameState(game))
     turn.get.actorRef ! PlayerTurn
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
     context.become(inTurn(game, turn.get) orElse terminated)
   }
 
-  private def inTurn(value: Match, ref: PlayerRef): Receive = {
+  private def inTurn(value: Game, ref: PlayerRef): Receive = {
     case RollDice(n) if ref.actorRef == sender =>
       val newState = value.rollDice(n, ref.id)
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(newState._2))

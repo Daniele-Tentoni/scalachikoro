@@ -1,4 +1,4 @@
-package it.scalachikoro.game.matches
+package it.scalachikoro.koro.game
 
 trait Turn[T] {
   def get: T

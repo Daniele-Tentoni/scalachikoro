@@ -1,9 +1,9 @@
 package it.scalachikoro.messages
 
 import akka.actor.ActorRef
-import it.scalachikoro.game.cards.Card
-import it.scalachikoro.game.matches.Match
-import it.scalachikoro.game.players.PlayerRef
+import it.scalachikoro.koro.cards.Card
+import it.scalachikoro.koro.game.Game
+import it.scalachikoro.koro.players.PlayerRef
 
 object LobbyMessages {
 
@@ -21,7 +21,7 @@ object LobbyMessages {
 
 object GameMessages {
 
-  case class MatchFound()
+  case class GameFound()
 
   case class Accept(name: String)
 
@@ -31,7 +31,7 @@ object GameMessages {
 
   case class Ready(name: String)
 
-  case class GameState(state: Match)
+  case class GameState(state: Game)
 
   case class PlayerTurn()
 

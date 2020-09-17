@@ -1,6 +1,6 @@
-package it.scalachikoro.game.players
+package it.scalachikoro.koro.players
 
-import it.scalachikoro.game.cards.{AimCard, Card, CardType}
+import it.scalachikoro.koro.cards.{AimCard, Card, CardType}
 
 case class PlayerKoro(override val id: String, name: String, money: Int, boardCards: Seq[Card]) extends Player {
   def canAcquire(card: Card): Boolean =

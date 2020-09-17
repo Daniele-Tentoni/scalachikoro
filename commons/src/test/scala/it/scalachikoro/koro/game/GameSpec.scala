@@ -1,8 +1,8 @@
-package it.scalachikoro.game.matches
+package it.scalachikoro.koro.game
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class MatchesSpec extends AnyWordSpec with Matchers {
+class GameSpec extends AnyWordSpec with Matchers {
 
 }

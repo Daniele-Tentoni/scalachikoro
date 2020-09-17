@@ -1,4 +1,4 @@
-package it.scalachikoro.game.cards
+package it.scalachikoro.koro.cards
 
 import scala.util.Random
 
