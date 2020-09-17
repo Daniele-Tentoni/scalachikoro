@@ -7,7 +7,7 @@ object KoroAlert {
   def apply(title: String, message: String, alertType: AlertType): Alert = {
     val alert = new Alert(alertType)
     alert.setTitle(title)
-    alert.setHeaderText(null)
+    alert.setHeaderText("")
     alert.setContentText(message)
     alert
   }
