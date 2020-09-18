@@ -121,8 +121,8 @@ jobs:
       jdk:
         - openjdk11
     # Send test statistics to other services.
-    - stage: Codecov report
+    - stage: Test coverage reports
       script:
-        - sbt coverage test
+        - sbt coverage test coverageReport
         - bash <(curl -s https://codecov.io/bash)
         - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
