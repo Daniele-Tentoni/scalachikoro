@@ -18,9 +18,9 @@ class LobbyActor extends MyActor {
   var lobby: Lobby[PlayerRef] = PlayersLobby(Seq.empty)
 
   def receive: Receive = {
-    case Hi(name, ref) =>
+    case Connect(name, ref) =>
       log(f"${ref.path} with $name say Hi.")
-      ref ! Hi("Server", self)
+      ref ! Hi("Server")
 
     case WannaQueue(name, ref) =>
       log(f"${ref.path} with $name wanna queue.")

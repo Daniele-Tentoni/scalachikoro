@@ -6,7 +6,7 @@ import it.scalachikoro.client.views.stages.StartupStage
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.constants.ActorConstants.LobbyActorName
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
-import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, WannaQueue}
+import it.scalachikoro.messages.LobbyMessages.{Connect, Leave, WannaQueue}
 import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.control.ButtonType
 
@@ -100,7 +100,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)
         println(f"Located Server actor: $serverLobbyRef.")
-        withServerLobbyRef { ref => ref ! Hi(name, startupActor) }
+        withServerLobbyRef { ref => ref ! Connect(name, startupActor) }
 
       case Failure(t) =>
         System.err.println(
@@ -113,6 +113,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
 
   override def welcomed(name: String): Unit = Platform.runLater {
     KoroAlert.info("Welcome", "You are welcome") showAndWait()
+    startUpStage.goToQueueScene(name)
   }
 
   override def queue(name: String): Unit = withServerLobbyRef { serverRef => serverRef ! WannaQueue(name, startupActor) }

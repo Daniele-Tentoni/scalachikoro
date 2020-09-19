@@ -28,7 +28,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
     val mockActor = provideActorRef(mockListener)
 
     "notify the listener on game state updated" in {
-      mockActor ! Hi(name, mockActor)
+      mockActor ! Hi(name)
       mockListener.welcomed _ verify name once()
     }
 

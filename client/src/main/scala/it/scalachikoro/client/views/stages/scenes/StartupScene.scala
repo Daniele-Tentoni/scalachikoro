@@ -28,17 +28,11 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
   val btnHi: Button = new Button("Hi")
   btnHi.onAction = _ => submit()
 
-  val btnQueue = new Button("Queue")
-  btnQueue.onAction = _ => enqueue()
-
-  val btnLeave = new Button("Unqueue")
-  btnLeave.onAction = _ => leave()
-
   val center: VBox = new VBox()
   center.alignment = Pos.Center
   center.spacing = 10
   center.setMaxWidth(400)
-  center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi, btnQueue, btnLeave)
+  center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi)
 
   val mainContent: BorderPane = new BorderPane()
   mainContent.prefWidth <== DoubleProperty(800)
@@ -62,16 +56,4 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
       KoroAlert info("Input error", "Some input error") showAndWait()
     }
   }
-
-  private def enqueue(): Unit = {
-    val username: String = usernameField.getText
-
-    if (!username.isEmpty) {
-      listener.queue(username)
-    } else {
-      KoroAlert info("Input error", "Some input error") showAndWait()
-    }
-  }
-
-  private def leave(): Unit = listener.leaveQueue()
 }
