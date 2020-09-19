@@ -1,6 +1,7 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.client.views.stages.scenes.components.IpTextFormatter
 import it.scalachikoro.client.views.utils.KoroAlert
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.{Insets, Pos}
@@ -11,6 +12,16 @@ import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 // TODO: Create the companion object.
 class StartupScene(listener: MainViewActorListener) extends Scene() {
   // TODO: Add a background.
+  val serverLabel: Label = Label("Server")
+  val serverField: TextField = new TextField {
+    text = "0.0.0.0"
+    textFormatter = IpTextFormatter()
+  }
+
+  val portLabel: Label = Label("Port")
+  val portField: TextField = new TextField {
+    text = "47000"
+  }
 
   val usernameLabel: Label = Label("Username")
   val usernameField: TextField = new TextField()
@@ -27,7 +38,7 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
   center.alignment = Pos.Center
   center.spacing = 10
   center.setMaxWidth(400)
-  center.getChildren.addAll(usernameLabel, usernameField, btnHi, btnQueue, btnLeave)
+  center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi, btnQueue, btnLeave)
 
   val mainContent: BorderPane = new BorderPane()
   mainContent.prefWidth <== DoubleProperty(800)
@@ -42,9 +53,11 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
 
   private def submit(): Unit = {
     val username: String = usernameField.getText
+    val server: String = serverField.getText
+    val port: String = portField.getText
 
     if (!username.isEmpty) {
-      listener.hi(username)
+      listener.connect(username, server, port)
     } else {
       KoroAlert info("Input error", "Some input error") showAndWait()
     }

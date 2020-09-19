@@ -20,7 +20,7 @@ trait MainViewActorListener {
    *
    * @param name Name to present to the server.
    */
-  def hi(name: String)
+  def connect(name: String, server: String, port: String)
 
   /**
    * Return the response of an Hi message.
@@ -91,11 +91,11 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     println(f"Startup Controller stopped.")
   }
 
-  override def hi(name: String): Unit = {
+  override def connect(name: String, server: String, port: String): Unit = {
     println("Starting main view actor.")
     // This is the constructor section. Find where the server is located and send a first message.
     startupActor = system.actorOf(MainViewActor.props(name, this))
-    val path = f"akka.tcp://Server@127.0.0.1:47000/user/$LobbyActorName"
+    val path = f"akka.tcp://Server@$server:$port/user/$LobbyActorName"
     system.actorSelection(path).resolveOne()(10.seconds) onComplete {
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)
@@ -107,7 +107,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
           f"""***********************************************
              |Failed to locate Server actor.
              |Reason: $t""".stripMargin)
-        system.terminate()
+        system.terminate() // TODO: Why the system is terminating?
     }
   }
 

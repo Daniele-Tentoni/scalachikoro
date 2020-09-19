@@ -7,6 +7,8 @@ import it.scalachikoro.koro.players.PlayerRef
 
 object LobbyMessages {
 
+  case class Connect(name: String)
+
   case class Hi(name: String, ref: ActorRef)
 
   case class WannaQueue(name: String, ref: ActorRef)
