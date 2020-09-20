@@ -35,14 +35,14 @@ object GameScene {
     rootContent.getChildren.addAll(mainContent)
     root = rootContent
     content = Seq(mainContent)
+  }
 
-    private def drop(): Unit = {
-      val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
-      if (response.contains(ButtonType.OK)) {
-        KoroAlert.info("Nooo", "Too bad. You can't drop.") showAndWait()
-      } else {
-        KoroAlert.info("Well", "Well... Very well!") showAndWait()
-      }
+  private def drop(): Unit = {
+    val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
+    if (response.contains(ButtonType.OK)) {
+      KoroAlert.info("Nooo", "Too bad. You can't drop.") showAndWait()
+    } else {
+      KoroAlert.info("Well", "Well... Very well!") showAndWait()
     }
   }
 

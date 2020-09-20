@@ -13,3 +13,6 @@ You’ve just been elected Mayor. Congratulations! Unfortunately, the citizens h
 
 ## Basic rules
 ### Preparing game
+
+###
+Text Formatter from Jarek Sacha: [Tutorial](https://codingonthestaircase.wordpress.com/2015/03/07/scalafx-8u40-textformatter-part-2/)

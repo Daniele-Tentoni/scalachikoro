@@ -6,7 +6,7 @@ import it.scalachikoro.client.views.stages.StartupStage
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.constants.ActorConstants.LobbyActorName
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
-import it.scalachikoro.messages.LobbyMessages.{Hi, Leave, WannaQueue}
+import it.scalachikoro.messages.LobbyMessages.{Connect, Leave, WannaQueue}
 import scalafx.application.{JFXApp, Platform}
 import scalafx.scene.control.ButtonType
 
@@ -20,7 +20,7 @@ trait MainViewActorListener {
    *
    * @param name Name to present to the server.
    */
-  def hi(name: String)
+  def connect(name: String, server: String, port: String)
 
   /**
    * Return the response of an Hi message.
@@ -91,28 +91,29 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     println(f"Startup Controller stopped.")
   }
 
-  override def hi(name: String): Unit = {
+  override def connect(name: String, server: String, port: String): Unit = {
     println("Starting main view actor.")
     // This is the constructor section. Find where the server is located and send a first message.
     startupActor = system.actorOf(MainViewActor.props(name, this))
-    val path = f"akka.tcp://Server@192.168.1.40:47000/user/$LobbyActorName"
+    val path = f"akka.tcp://Server@$server:$port/user/$LobbyActorName"
     system.actorSelection(path).resolveOne()(10.seconds) onComplete {
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)
         println(f"Located Server actor: $serverLobbyRef.")
-        withServerLobbyRef { ref => ref ! Hi(name, startupActor) }
+        withServerLobbyRef { ref => ref ! Connect(name, startupActor) }
 
       case Failure(t) =>
         System.err.println(
           f"""***********************************************
              |Failed to locate Server actor.
              |Reason: $t""".stripMargin)
-        system.terminate()
+        system.terminate() // TODO: Why the system is terminating?
     }
   }
 
   override def welcomed(name: String): Unit = Platform.runLater {
     KoroAlert.info("Welcome", "You are welcome") showAndWait()
+    startUpStage.goToQueueScene(name)
   }
 
   override def queue(name: String): Unit = withServerLobbyRef { serverRef => serverRef ! WannaQueue(name, startupActor) }
