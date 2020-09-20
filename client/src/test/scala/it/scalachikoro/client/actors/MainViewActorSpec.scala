@@ -34,18 +34,19 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on queue done" in {
       val id = "1"
-      mockActor ! Queued(id)
-      mockListener.queued _ verify name once()
+      mockActor ! Queued(id, 1)
+      pending
+      mockListener.queued _ verify (id, name, 1) once()
     }
 
     "notify the listener on queue left" in {
       mockActor ! LeftQueue()
-      (mockListener.queueLeft _).verify(*).once()
+      mockListener.queueLeft _ verify * once()
     }
 
     "notify the listener on Game Found" in {
       mockActor ! GameFound()
-      (mockListener.matchFound _).verify(*, *).once()
+      mockListener.matchFound _ verify(*, *) once()
     }
 
     "notify the listener on Game Start" in {

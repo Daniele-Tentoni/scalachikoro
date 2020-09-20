@@ -24,15 +24,15 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
   }
 
   def discovered(): Receive = {
-    case Queued(id) =>
+    case Queued(id, others) =>
       println(f"We are queue with id: $id.")
-      listener.queued(name)
       context.become(queued orElse terminated)
+      listener.queued(id, name, others)
   }
 
   def queued: Receive = {
     case LeftQueue() =>
-      println(f"We've left the queue.")
+      this log f"We've left the queue."
       listener.queueLeft(name)
 
     case GameFound() =>
@@ -46,10 +46,12 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
 
     case Drop() =>
     // TODO: Drop the game and return to not in queue.
+
+    case _ => this log f"Received unknown message"
   }
 
   def inactive: Receive = {
-    case _ => println("Received an unknown message.")
+    case _ => this log "Received an unknown message."
   }
 
   private def terminated: Receive = {

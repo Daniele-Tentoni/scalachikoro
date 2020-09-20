@@ -2,13 +2,12 @@ package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.MainViewActorListener
 import it.scalachikoro.client.views.stages.scenes.components.IpTextFormatter
-import it.scalachikoro.client.views.utils.KoroAlert
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, Label, TextField}
 import scalafx.scene.layout.VBox
 
 // TODO: Create the companion object.
-class StartupScene(listener: MainViewActorListener) extends BaseScene() {
+case class StartupScene(listener: MainViewActorListener) extends BaseScene {
   // TODO: Add a background.
   val serverLabel: Label = Label("Server")
   val serverField: TextField = new TextField {
@@ -45,7 +44,9 @@ class StartupScene(listener: MainViewActorListener) extends BaseScene() {
       bottomBar loading true
       listener.connect(username, server, port)
     } else {
-      KoroAlert info("Input error", "Some input error") showAndWait()
+      bottomBar message "Username not present."
+      bottomBar loading false
+      // KoroAlert error("Input error", "Some input error") showAndWait()
     }
   }
 }

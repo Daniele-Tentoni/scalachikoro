@@ -5,29 +5,40 @@ import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.VBox
 
-trait QueueScene extends BaseScene
+case class QueueScene(name: String, listener: MainViewActorListener) extends BaseScene {
+  val usernameLabel: Label = Label(name)
+  val btnQueue = new Button("Queue")
+  btnQueue.onAction = _ => queue()
 
-object QueueScene {
+  val btnLeave = new Button("Leave queue")
+  btnLeave.onAction = _ => enqueue()
 
-  private class QueueSceneImpl(name: String, listener: MainViewActorListener) extends QueueScene {
-    val usernameLabel: Label = Label(name)
-    val btnQueue = new Button("Queue")
-    btnQueue.onAction = _ => enqueue()
+  val center: VBox = new VBox()
+  center.alignment = Pos.Center
+  center.spacing = 10
+  center.setMaxWidth(400)
+  center.getChildren.addAll(usernameLabel, btnQueue, btnLeave)
+  mainContent.center = center
 
-    val btnLeave = new Button("Leave queue")
-    btnLeave.onAction = _ => leave()
-
-    val center: VBox = new VBox()
-    center.alignment = Pos.Center
-    center.spacing = 10
-    center.setMaxWidth(400)
-    center.getChildren.addAll(usernameLabel, btnQueue, btnLeave)
-    mainContent.center = center
-
-    private def enqueue(): Unit = listener.queue(name)
-
-    private def leave(): Unit = listener.leaveQueue()
+  private def queue(): Unit = {
+    bottomBar message "Entering queue"
+    bottomBar loading true
+    listener.queue(name)
   }
 
-  def apply(name: String, listener: MainViewActorListener): QueueScene = new QueueSceneImpl(name, listener)
+  def queued(n: Int): Unit = {
+    bottomBar message f"Queued with other $n other players"
+    bottomBar loading true
+  }
+
+  private def enqueue(): Unit = {
+    bottomBar message "Leaving queue"
+    bottomBar loading true
+    listener.leaveQueue()
+  }
+
+  def enqueued(): Unit = {
+    bottomBar message "Left queue"
+    bottomBar loading false
+  }
 }

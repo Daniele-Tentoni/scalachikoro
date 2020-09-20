@@ -19,39 +19,45 @@ class LobbyActor extends MyActor {
 
   def receive: Receive = {
     case Connect(name, ref) =>
-      log(f"${ref.path} with $name say Hi.")
+      this log f"${ref.path} with $name say Hi."
       ref ! Hi("Server")
 
     case WannaQueue(name, ref) =>
-      log(f"${ref.path} with $name wanna queue.")
+      this log f"${ref.path} with $name wanna queue."
       val p = LobbyActor.player(name, ref)
       lobby = lobby + p
-      ref ! Queued(p.id)
+      this log f"There are ${lobby.items.size} players in the lobby."
+      ref ! Queued(p.id, lobby.items.size)
       checkAndCreateGame()
 
     case Leave(id) =>
-      log(f"${sender.path} with $id wanna leave the queue.")
-      val leaver = lobby.items.find(_.id == id)
+      this log f"${sender.path} with $id wanna leave the queue."
+      val leaver = lobby.items find(_.id == id)
       lobby = lobby - id
-      withRef(leaver) {
-        _.actorRef ! LeftQueue()
+      withRef(leaver) { ref =>
+        this log f"${ref.name} left the queue."
+        ref.actorRef ! LeftQueue()
       }
 
     case _ => log(f"${sender.path} send me an unknown message.")
   }
 
   private def checkAndCreateGame(): Unit = {
+    this log f"Fetch for at least 2 players."
     val p = lobby.getItems(2)
     p._2 match {
-      case Some(value) => generateGameActor(value)
+      case Some(value) =>
+        this log f"Founded ${p._2} to start a match."
+        generateGameActor(value)
       case _ =>
     }
   }
 
   private def generateGameActor(players: Seq[PlayerRef]): Unit = {
+    this log f"Generate a new Game Actor."
     val matchActor = context.actorOf(GameActor.props(players.size))
     matchActor ! Start(players)
-    log(f"Start Game Actor with ${players.map(_.name)} players.")
+    this log f"Start Game Actor with ${players.map(_.name)} players."
   }
 
   log(f"I'm listening")

@@ -6,7 +6,7 @@ import scalafx.geometry.Insets
 import scalafx.scene.Scene
 import scalafx.scene.layout.{BorderPane, StackPane}
 
-class BaseScene extends Scene {
+trait BaseScene extends Scene {
   protected val bottomBar: BottomBarBox = new BottomBarBox()
 
   protected val mainContent: BorderPane = new BorderPane()

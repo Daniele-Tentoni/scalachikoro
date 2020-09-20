@@ -13,7 +13,12 @@ object LobbyMessages {
 
   case class WannaQueue(name: String, ref: ActorRef)
 
-  case class Queued(id: String)
+  /**
+   * Message after player is queued.
+   * @param id Id given by the system.
+   * @param others Number of other players in queue.
+   */
+  case class Queued(id: String, others: Int)
 
   case class Leave(id: String)
 

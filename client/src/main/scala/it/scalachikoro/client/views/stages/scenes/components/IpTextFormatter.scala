@@ -1,7 +1,6 @@
 package it.scalachikoro.client.views.stages.scenes.components
 
 import java.net.InetAddress
-import java.util.function.UnaryOperator
 
 import scalafx.scene.control.TextFormatter
 import scalafx.util.StringConverter
@@ -25,7 +24,7 @@ object IpTextFormatter {
     else
       InetAddress.getByName("0.0.0.0")
 
-    override def toString(v: InetAddress): String = v.getHostName
+    override def toString(v: InetAddress): String = v.getHostAddress
   }
 
   private val ipAddressFilter: scalafx.scene.control.TextFormatter.Change => scalafx.scene.control.TextFormatter.Change = c => {

@@ -52,4 +52,10 @@ object KoroAlert {
    * @return Alert to show.
    */
   def confirmation(title: String, message: String): Alert = KoroAlert(title, message, AlertType.Confirmation)
+
+  def error(title: String, message: String, parent: Stage): Alert = KoroAlert(title, message, AlertType.Error, parent)
+
+  def error(title: String, message: String): Alert = KoroAlert(title, message, AlertType.Error)
+
+
 }

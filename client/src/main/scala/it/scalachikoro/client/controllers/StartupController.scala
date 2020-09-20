@@ -39,9 +39,11 @@ trait MainViewActorListener {
   /**
    * Return the response of the queue message.
    *
-   * @param name Name of player queued.
+   * @param id     Id of player given by the system.
+   * @param name   Name of player queued.
+   * @param others Number of other players.
    */
-  def queued(name: String)
+  def queued(id: String, name: String, others: Int)
 
   /**
    * Say to server to leave the queue.
@@ -111,15 +113,16 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     }
   }
 
-  override def welcomed(name: String): Unit = Platform.runLater {
-    KoroAlert.info("Welcome", "You are welcome") showAndWait()
-    startUpStage.goToQueueScene(name)
+  override def welcomed(name: String): Unit = Platform runLater {
+    KoroAlert info("Welcome", "You are welcome") showAndWait()
+    startUpStage goToQueueScene name
   }
 
   override def queue(name: String): Unit = withServerLobbyRef { serverRef => serverRef ! WannaQueue(name, startupActor) }
 
-  override def queued(name: String): Unit = Platform.runLater {
-    KoroAlert.info("Queued", "You are now in queue") showAndWait()
+  override def queued(id: String, name: String, others: Int): Unit = Platform.runLater {
+    startUpStage queued others
+    // KoroAlert.info("Queued", "You are now in queue") showAndWait()
   }
 
   /**
@@ -127,15 +130,15 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    */
   override def leaveQueue(): Unit = withServerLobbyRef { ref => ref ! Leave("1") }
 
-  override def queueLeft(name: String): Unit = Platform.runLater {
-    KoroAlert.info("Sad", "I'm sad.") showAndWait()
+  override def queueLeft(name: String): Unit = Platform runLater {
+    KoroAlert info("Sad", "I'm sad.") showAndWait()
   }
 
-  override def matchFound(name: String, gameRef: ActorRef): Unit = Platform.runLater {
+  override def matchFound(name: String, gameRef: ActorRef): Unit = Platform runLater {
     val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
 
     // React to user's selection.
-    inviteAccepted(name, alert.contains(ButtonType.OK), gameRef)
+    inviteAccepted(name, alert contains ButtonType.OK, gameRef)
   }
 
   override def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef): Unit =
@@ -145,12 +148,13 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
       gameRef ! Drop()
 
   override def gameStarted(): Unit = {
-    gameController.start()
+    gameController start()
     println("GameController started.")
   }
 
   /**
    * Invoke a function only if have some actor reference.
+   *
    * @param f Function to invoke.
    */
   private def withServerLobbyRef(f: ActorRef => Unit): Unit = {
