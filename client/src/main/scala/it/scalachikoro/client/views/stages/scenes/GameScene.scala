@@ -2,13 +2,11 @@ package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.GameEventListener
 import it.scalachikoro.client.views.utils.KoroAlert
-import scalafx.beans.property.DoubleProperty
-import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.Scene
+import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, ButtonType, Label}
-import scalafx.scene.layout.{BorderPane, StackPane, VBox}
+import scalafx.scene.layout.VBox
 
-trait GameScene extends Scene
+trait GameScene extends BaseScene
 
 object GameScene {
 
@@ -28,7 +26,6 @@ object GameScene {
     }
 
     // TODO: Add a list of previous rolls.
-    val previousRolls:
     // TODO: Add the player card list.
     // TODO: Add the deck card list.
 
@@ -37,19 +34,9 @@ object GameScene {
     center.spacing = 10
     center.setMaxWidth(400)
     center.getChildren.addAll(usernameLabel, btnDrop, diceLabel, roll1Btn, roll2Btn)
-
-    val mainContent: BorderPane = new BorderPane()
-    mainContent.prefWidth <== DoubleProperty(800)
-    mainContent.maxHeight <== DoubleProperty(640)
-    mainContent.setPadding(Insets(5))
     mainContent.center = center
 
-    val rootContent = new StackPane()
-    rootContent.getChildren.addAll(mainContent)
-    root = rootContent
-    content = Seq(mainContent)
-
-    private def roll(n: Int) = listener.roll(n)
+    private def roll(n: Int): Unit = listener.roll(n)
   }
 
   private def drop(): Unit = {

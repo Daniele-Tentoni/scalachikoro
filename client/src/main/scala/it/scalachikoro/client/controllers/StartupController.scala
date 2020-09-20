@@ -144,15 +144,19 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     else
       gameRef ! Drop()
 
+  override def gameStarted(): Unit = {
+    gameController.start()
+    println("GameController started.")
+  }
+
+  /**
+   * Invoke a function only if have some actor reference.
+   * @param f Function to invoke.
+   */
   private def withServerLobbyRef(f: ActorRef => Unit): Unit = {
     this.serverLobbyRef match {
       case Some(ref) => f(ref)
       case None => println(f"No server actor.")
     }
-  }
-
-  override def gameStarted(): Unit = {
-    gameController.start()
-    println("GameController started.")
   }
 }

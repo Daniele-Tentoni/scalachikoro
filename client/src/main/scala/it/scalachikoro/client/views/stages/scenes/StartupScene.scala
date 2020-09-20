@@ -42,6 +42,7 @@ class StartupScene(listener: MainViewActorListener) extends BaseScene() {
 
     if (!username.isEmpty) {
       bottomBar message "Connecting to server"
+      bottomBar loading true
       listener.connect(username, server, port)
     } else {
       KoroAlert info("Input error", "Some input error") showAndWait()
