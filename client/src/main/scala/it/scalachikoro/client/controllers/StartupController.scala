@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import it.scalachikoro.client.actors.MainViewActor
 import it.scalachikoro.client.views.stages.StartupStage
 import it.scalachikoro.client.views.utils.KoroAlert
-import it.scalachikoro.constants.ActorConstants.LobbyActorName
+import it.scalachikoro.constants.ActorConstants.{LobbyActorName, ServerActorSystemName}
 import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
 import it.scalachikoro.messages.LobbyMessages.{Connect, Leave, WannaQueue}
@@ -70,11 +70,12 @@ trait MainViewActorListener {
    */
   def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef)
 
-  // TODO: Add a comment to this.
+  /**
+   * The Server says that a Game is started.
+   */
   def gameStarted()
 }
 
-// TODO: Add a comment to this.
 class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
   private val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
@@ -96,12 +97,15 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     println(f"Startup Controller stopped.")
   }
 
+  /**
+   * @inheritdoc
+   */
   override def connect(name: String, server: String, port: String): Unit = {
     println("Starting main view actor.")
     // This is the constructor section. Find where the server is located and send a first message.
     val actor = system.actorOf(MainViewActor.props(name, this))
     player = player.copy(actorRef = actor)
-    val path = f"akka.tcp://Server@$server:$port/user/$LobbyActorName"
+    val path = f"akka.tcp://$ServerActorSystemName@$server:$port/user/$LobbyActorName"
     system.actorSelection(path).resolveOne()(10.seconds) onComplete {
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)
@@ -117,6 +121,9 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   override def welcomed(name: String, server: ActorRef): Unit = Platform runLater {
     KoroAlert info("Welcome", "You are welcome") showAndWait()
     player = player.copy(name = name)
@@ -154,6 +161,9 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     KoroAlert info("Sad", "I'm sad.") showAndWait()
   }
 
+  /**
+   * @inheritdoc
+   */
   override def matchFound(name: String, gameRef: ActorRef): Unit = Platform runLater {
     val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
 
@@ -161,12 +171,18 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     inviteAccepted(name, alert contains ButtonType.OK, gameRef)
   }
 
+  /**
+   * @inheritdoc
+   */
   override def inviteAccepted(name: String, response: Boolean, gameRef: ActorRef): Unit =
     if (response)
       gameRef ! Accept(name)
     else
       gameRef ! Drop()
 
+  /**
+   * @inheritdoc
+   */
   override def gameStarted(): Unit = {
     gameController start()
     println("GameController started.")

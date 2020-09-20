@@ -7,23 +7,27 @@ import scalafx.scene.layout.VBox
 
 case class QueueScene(name: String, listener: MainViewActorListener) extends BaseScene {
   val usernameLabel: Label = Label(name)
-  val btnQueue = new Button("Queue")
-  btnQueue.onAction = _ => queue()
+  val btnQueue: Button = new Button("Queue") {
+    onAction = _ => queue()
+  }
 
-  val btnLeave = new Button("Leave queue")
-  btnLeave.onAction = _ => enqueue()
+  val btnLeave: Button = new Button("Leave queue") {
+    onAction = _ => enqueue()
+  }
 
-  val center: VBox = new VBox()
-  center.alignment = Pos.Center
-  center.spacing = 10
-  center.setMaxWidth(400)
+  val center: VBox = new VBox() {
+    alignment = Pos.Center
+    maxWidth = 400
+    spacing = 10
+  }
+
   center.getChildren.addAll(usernameLabel, btnQueue, btnLeave)
   mainContent.center = center
 
   private def queue(): Unit = {
     bottomBar message "Entering queue"
     bottomBar loading true
-    listener.queue(name)
+    listener queue name
   }
 
   def queued(n: Int): Unit = {
@@ -34,7 +38,7 @@ case class QueueScene(name: String, listener: MainViewActorListener) extends Bas
   private def enqueue(): Unit = {
     bottomBar message "Leaving queue"
     bottomBar loading true
-    listener.leaveQueue()
+    listener leaveQueue()
   }
 
   def enqueued(): Unit = {

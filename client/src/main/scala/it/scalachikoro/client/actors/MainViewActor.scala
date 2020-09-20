@@ -17,8 +17,8 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
   def receive: Receive = lobby
 
   def lobby: Receive = {
-    case Hi(name) =>
-      this log f"$name said Hi!"
+    case Hi(remote) =>
+      this log f"$remote said Hi!"
       context become(discovered orElse terminated)
       listener welcomed(name, sender)
   }

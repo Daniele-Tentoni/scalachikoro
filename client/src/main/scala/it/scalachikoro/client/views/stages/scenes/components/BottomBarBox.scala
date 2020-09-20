@@ -1,6 +1,7 @@
 package it.scalachikoro.client.views.stages.scenes.components
 
 import scalafx.application.Platform
+import scalafx.geometry.Pos
 import scalafx.geometry.Pos.BottomRight
 import scalafx.scene.control.{Label, ProgressIndicator}
 import scalafx.scene.layout.HBox
@@ -10,20 +11,24 @@ import scalafx.scene.layout.HBox
  */
 class BottomBarBox extends HBox {
   private val progress: ProgressIndicator = new ProgressIndicator() {
+    maxHeight = 30
     visible = false
   }
   private val messageContainer: Label = Label("")
+  messageContainer.alignment = Pos.BaselineCenter
   alignment = BottomRight
   children.addAll(progress, messageContainer)
 
   /**
    * Show the loading circle in the bar.
+   *
    * @param mode True to show, False to hide.
    */
   def loading(mode: Boolean): Unit = progress.setVisible(mode)
 
   /**
    * Show a message in the bar label.
+   *
    * @param text Text to show.
    */
   def message(text: String): Unit = {
