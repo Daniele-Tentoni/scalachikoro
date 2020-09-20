@@ -10,25 +10,33 @@ import scalafx.scene.layout.VBox
 case class StartupScene(listener: MainViewActorListener) extends BaseScene {
   // TODO: Add a background.
   val serverLabel: Label = Label("Server")
+  serverLabel.maxWidth = 300
   val serverField: TextField = new TextField {
     text = "0.0.0.0"
     textFormatter = IpTextFormatter()
+    maxWidth = 300
   }
 
   val portLabel: Label = Label("Port")
+  portLabel.maxWidth = 300
   val portField: TextField = new TextField {
     text = "47000"
+    maxWidth = 300
   }
 
   val usernameLabel: Label = Label("Username")
-  val usernameField: TextField = new TextField()
-  val btnHi: Button = new Button("Hi")
-  btnHi.onAction = _ => submit()
+  val usernameField: TextField = new TextField() {
+    maxWidth = 500
+  }
+  val btnHi: Button = new Button("Hi") {
+    onAction = _ => submit()
+  }
 
-  val center: VBox = new VBox()
-  center.alignment = Pos.Center
-  center.spacing = 10
-  // center.setMaxWidth(400)
+  val center: VBox = new VBox() {
+    alignment = Pos.Center
+    spacing = 10
+    // setMaxWidth(400)
+  }
   center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi)
 
   // This take mainContent from the parent scene.

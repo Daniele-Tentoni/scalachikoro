@@ -1,5 +1,6 @@
 package it.scalachikoro.client.actors
 
+import akka.actor.ActorRef.noSender
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
@@ -29,7 +30,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on game state updated" in {
       mockActor ! Hi(name)
-      mockListener.welcomed _ verify name once()
+      mockListener.welcomed _ verify (name, noSender) once()
     }
 
     "notify the listener on queue done" in {

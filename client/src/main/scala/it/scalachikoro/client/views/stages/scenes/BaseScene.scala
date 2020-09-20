@@ -14,7 +14,7 @@ trait BaseScene extends Scene {
   mainContent.maxHeight <== DoubleProperty(640)
   mainContent.setPadding(Insets(5))
 
-  // Don't set the mainContent center here, but in the child.
+  // ! Don't set the mainContent center here, but in the child.
   // mainContent.center = center
   mainContent.bottom = bottomBar
 

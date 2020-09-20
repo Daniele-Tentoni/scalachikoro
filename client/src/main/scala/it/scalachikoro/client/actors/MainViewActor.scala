@@ -19,29 +19,31 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
   def lobby: Receive = {
     case Hi(name) =>
       this log f"$name said Hi!"
-      context.become(discovered orElse terminated)
-      listener.welcomed(name)
+      context become(discovered orElse terminated)
+      listener welcomed(name, sender)
   }
 
-  def discovered(): Receive = {
+  def discovered: Receive = {
     case Queued(id, others) =>
       this log f"We are queue with id: $id."
-      context.become(queued orElse terminated)
-      listener.queued(id, name, others)
+      context become(queued orElse terminated)
+      listener queued(id, name, others)
   }
 
   def queued: Receive = {
     case LeftQueue() =>
       this log f"We've left the queue."
-      listener.queueLeft(name)
+      context become (discovered orElse terminated)
+      listener queueLeft name
 
     case GameFound() =>
       this log "Game found"
-      listener.matchFound(name, sender)
+      context become (inactive orElse terminated)
+      listener matchFound(name, sender)
 
     case Start(players) =>
       this log f"Start message received with $players"
-      context.become(inactive)
+      context become inactive
     // TODO: Generate new view.
 
     case Drop() =>

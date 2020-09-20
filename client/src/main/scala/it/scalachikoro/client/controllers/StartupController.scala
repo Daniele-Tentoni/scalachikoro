@@ -27,9 +27,10 @@ trait MainViewActorListener {
   /**
    * Return the response of an Hi message.
    *
-   * @param name Name received.
+   * @param name   Name received.
+   * @param server Get the correct server reference.
    */
-  def welcomed(name: String)
+  def welcomed(name: String, server: ActorRef)
 
   /**
    * Say to server to queue the player.
@@ -116,16 +117,19 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     }
   }
 
-  override def welcomed(name: String): Unit = Platform runLater {
+  override def welcomed(name: String, server: ActorRef): Unit = Platform runLater {
     KoroAlert info("Welcome", "You are welcome") showAndWait()
     player = player.copy(name = name)
+    serverLobbyRef = Some(server)
     startUpStage goToQueueScene player.name
   }
 
   /**
    * @inheritdoc
    */
-  override def queue(name: String): Unit = withServerLobbyRef { _ ! WannaQueue(name, player.actorRef) }
+  override def queue(name: String): Unit = withServerLobbyRef {
+    _ ! WannaQueue(name, player.actorRef)
+  }
 
   /**
    * @inheritdoc
@@ -139,7 +143,9 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   /**
    * @inheritdoc
    */
-  override def leaveQueue(): Unit = withServerLobbyRef { _ ! Leave("1") }
+  override def leaveQueue(): Unit = withServerLobbyRef {
+    _ ! Leave(player.id)
+  }
 
   /**
    * @inheritdoc
