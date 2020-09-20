@@ -41,7 +41,7 @@ class LobbyActor extends MyActor {
   }
 
   private def checkAndCreateGame(): Unit = {
-    val p = lobby.getItems(1)
+    val p = lobby.getItems(2)
     p._2 match {
       case Some(value) => generateGameActor(value)
       case _ =>

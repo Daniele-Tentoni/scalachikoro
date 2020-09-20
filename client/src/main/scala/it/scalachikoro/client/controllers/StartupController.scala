@@ -95,7 +95,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
     println("Starting main view actor.")
     // This is the constructor section. Find where the server is located and send a first message.
     startupActor = system.actorOf(MainViewActor.props(name, this))
-    val path = f"akka.tcp://Server@127.0.0.1:47000/user/$LobbyActorName"
+    val path = f"akka.tcp://Server@192.168.1.40:47000/user/$LobbyActorName"
     system.actorSelection(path).resolveOne()(10.seconds) onComplete {
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)

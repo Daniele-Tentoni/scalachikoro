@@ -10,7 +10,7 @@ import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 
 // TODO: Create the companion object.
 class StartupScene(listener: MainViewActorListener) extends Scene() {
-  // TODO: Add a background.
+  // TODO: Add a background
 
   val usernameLabel: Label = Label("Username")
   val usernameField: TextField = new TextField()
