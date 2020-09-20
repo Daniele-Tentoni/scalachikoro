@@ -5,7 +5,7 @@ import it.scalachikoro.client.views.utils.KoroAlert
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ButtonType, Label, TextField}
+import scalafx.scene.control.{Button, ButtonType, Label}
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 
 trait GameScene extends Scene
@@ -15,15 +15,28 @@ object GameScene {
   private class GameSceneImpl(listener: GameEventListener) extends GameScene {
     // TODO: Add a background.
     val usernameLabel: Label = Label("Username")
-    val usernameField: TextField = new TextField()
-    val btnDrop: Button = new Button("Hi")
+    val btnDrop: Button = new Button("Drop game")
     btnDrop.onAction = _ => drop()
+
+    val diceLabel: Label = Label("Dice")
+    val roll1Btn: Button = new Button("Roll one dice") {
+      onAction = _ => roll(1) // TODO: Move this behaviour to another class.
+    }
+
+    val roll2Btn: Button = new Button("Roll two dices") {
+      onAction = _ => roll(2)
+    }
+
+    // TODO: Add a list of previous rolls.
+    val previousRolls:
+    // TODO: Add the player card list.
+    // TODO: Add the deck card list.
 
     val center: VBox = new VBox()
     center.alignment = Pos.Center
     center.spacing = 10
     center.setMaxWidth(400)
-    center.getChildren.addAll(usernameLabel, usernameField, btnDrop)
+    center.getChildren.addAll(usernameLabel, btnDrop, diceLabel, roll1Btn, roll2Btn)
 
     val mainContent: BorderPane = new BorderPane()
     mainContent.prefWidth <== DoubleProperty(800)
@@ -35,6 +48,8 @@ object GameScene {
     rootContent.getChildren.addAll(mainContent)
     root = rootContent
     content = Seq(mainContent)
+
+    private def roll(n: Int) = listener.roll(n)
   }
 
   private def drop(): Unit = {

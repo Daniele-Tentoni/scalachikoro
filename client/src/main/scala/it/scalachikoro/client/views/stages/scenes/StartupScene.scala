@@ -3,14 +3,12 @@ package it.scalachikoro.client.views.stages.scenes
 import it.scalachikoro.client.controllers.MainViewActorListener
 import it.scalachikoro.client.views.stages.scenes.components.IpTextFormatter
 import it.scalachikoro.client.views.utils.KoroAlert
-import scalafx.beans.property.DoubleProperty
-import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.Scene
+import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, Label, TextField}
-import scalafx.scene.layout.{BorderPane, StackPane, VBox}
+import scalafx.scene.layout.VBox
 
 // TODO: Create the companion object.
-class StartupScene(listener: MainViewActorListener) extends Scene() {
+class StartupScene(listener: MainViewActorListener) extends BaseScene() {
   // TODO: Add a background.
   val serverLabel: Label = Label("Server")
   val serverField: TextField = new TextField {
@@ -31,19 +29,11 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
   val center: VBox = new VBox()
   center.alignment = Pos.Center
   center.spacing = 10
-  center.setMaxWidth(400)
+  // center.setMaxWidth(400)
   center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi)
 
-  val mainContent: BorderPane = new BorderPane()
-  mainContent.prefWidth <== DoubleProperty(800)
-  mainContent.maxHeight <== DoubleProperty(640)
-  mainContent.setPadding(Insets(5))
+  // This take mainContent from the parent scene.
   mainContent.center = center
-
-  val rootContent = new StackPane()
-  rootContent.getChildren.addAll(mainContent)
-  root = rootContent
-  content = Seq(mainContent)
 
   private def submit(): Unit = {
     val username: String = usernameField.getText
@@ -51,6 +41,7 @@ class StartupScene(listener: MainViewActorListener) extends Scene() {
     val port: String = portField.getText
 
     if (!username.isEmpty) {
+      bottomBar message "Connecting to server"
       listener.connect(username, server, port)
     } else {
       KoroAlert info("Input error", "Some input error") showAndWait()
