@@ -11,11 +11,18 @@ object LobbyMessages {
 
   case class Hi(name: String)
 
+  /**
+   * Message from client that wanna queue a game.
+   *
+   * @param name Name of the player.
+   * @param ref  Player actor reference.
+   */
   case class WannaQueue(name: String, ref: ActorRef)
 
   /**
    * Message after player is queued.
-   * @param id Id given by the system.
+   *
+   * @param id     Id given by the system.
    * @param others Number of other players in queue.
    */
   case class Queued(id: String, others: Int)

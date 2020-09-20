@@ -1,10 +1,12 @@
 package it.scalachikoro.client.controllers
 
+import akka.actor.ActorRef.noSender
 import akka.actor.{ActorRef, ActorSystem}
 import it.scalachikoro.client.actors.MainViewActor
 import it.scalachikoro.client.views.stages.StartupStage
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.constants.ActorConstants.LobbyActorName
+import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
 import it.scalachikoro.messages.LobbyMessages.{Connect, Leave, WannaQueue}
 import scalafx.application.{JFXApp, Platform}
@@ -75,7 +77,7 @@ trait MainViewActorListener {
 class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
   private val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
-  var startupActor: ActorRef = _
+  var player: PlayerRef = PlayerRef(noSender, "", "")
   val gameController = new GameController(system, app)
 
   /**
@@ -96,13 +98,14 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   override def connect(name: String, server: String, port: String): Unit = {
     println("Starting main view actor.")
     // This is the constructor section. Find where the server is located and send a first message.
-    startupActor = system.actorOf(MainViewActor.props(name, this))
+    val actor = system.actorOf(MainViewActor.props(name, this))
+    player = player.copy(actorRef = actor)
     val path = f"akka.tcp://Server@$server:$port/user/$LobbyActorName"
     system.actorSelection(path).resolveOne()(10.seconds) onComplete {
       case Success(ref: ActorRef) =>
         serverLobbyRef = Option(ref)
         println(f"Located Server actor: $serverLobbyRef.")
-        withServerLobbyRef { ref => ref ! Connect(name, startupActor) }
+        withServerLobbyRef { ref => ref ! Connect(name, actor) }
 
       case Failure(t) =>
         System.err.println(
@@ -115,12 +118,20 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
 
   override def welcomed(name: String): Unit = Platform runLater {
     KoroAlert info("Welcome", "You are welcome") showAndWait()
-    startUpStage goToQueueScene name
+    player = player.copy(name = name)
+    startUpStage goToQueueScene player.name
   }
 
-  override def queue(name: String): Unit = withServerLobbyRef { serverRef => serverRef ! WannaQueue(name, startupActor) }
+  /**
+   * @inheritdoc
+   */
+  override def queue(name: String): Unit = withServerLobbyRef { _ ! WannaQueue(name, player.actorRef) }
 
+  /**
+   * @inheritdoc
+   */
   override def queued(id: String, name: String, others: Int): Unit = Platform.runLater {
+    player = player.copy(id = id)
     startUpStage queued others
     // KoroAlert.info("Queued", "You are now in queue") showAndWait()
   }
@@ -128,8 +139,11 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   /**
    * @inheritdoc
    */
-  override def leaveQueue(): Unit = withServerLobbyRef { ref => ref ! Leave("1") }
+  override def leaveQueue(): Unit = withServerLobbyRef { _ ! Leave("1") }
 
+  /**
+   * @inheritdoc
+   */
   override def queueLeft(name: String): Unit = Platform runLater {
     KoroAlert info("Sad", "I'm sad.") showAndWait()
   }

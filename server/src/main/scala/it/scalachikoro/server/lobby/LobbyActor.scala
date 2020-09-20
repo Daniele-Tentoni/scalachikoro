@@ -31,10 +31,9 @@ class LobbyActor extends MyActor {
       checkAndCreateGame()
 
     case Leave(id) =>
-      this log f"${sender.path} with $id wanna leave the queue."
-      val leaver = lobby.items find(_.id == id)
-      lobby = lobby - id
-      withRef(leaver) { ref =>
+      this log s"$id wanna leave the queue"
+      withRef(lobby.items find(_.id == id)) { ref =>
+        lobby = lobby - id
         this log f"${ref.name} left the queue."
         ref.actorRef ! LeftQueue()
       }
@@ -47,9 +46,9 @@ class LobbyActor extends MyActor {
     val p = lobby.getItems(2)
     p._2 match {
       case Some(value) =>
-        this log f"Founded ${p._2} to start a match."
+        this log f"Found ${p._2} to start a match."
         generateGameActor(value)
-      case _ =>
+      case _ => this log f"No players found to start a match."
     }
   }
 

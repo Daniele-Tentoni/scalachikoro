@@ -6,4 +6,4 @@ trait Player extends Identifiable {
   def name: String
 }
 
-class PlayerRef(override val actorRef: ActorRef, override val id: String, override val name: String) extends Player with Referable
+case class PlayerRef(override val actorRef: ActorRef, override val id: String, override val name: String) extends Player with Referable

@@ -18,14 +18,14 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
 
   def lobby: Receive = {
     case Hi(name) =>
+      this log f"$name said Hi!"
       context.become(discovered orElse terminated)
-      log(f"$name said Hi!")
       listener.welcomed(name)
   }
 
   def discovered(): Receive = {
     case Queued(id, others) =>
-      println(f"We are queue with id: $id.")
+      this log f"We are queue with id: $id."
       context.become(queued orElse terminated)
       listener.queued(id, name, others)
   }
@@ -36,11 +36,11 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
       listener.queueLeft(name)
 
     case GameFound() =>
-      println("Game found")
+      this log "Game found"
       listener.matchFound(name, sender)
 
     case Start(players) =>
-      println(f"Start message received with $players")
+      this log f"Start message received with $players"
       context.become(inactive)
     // TODO: Generate new view.
 
