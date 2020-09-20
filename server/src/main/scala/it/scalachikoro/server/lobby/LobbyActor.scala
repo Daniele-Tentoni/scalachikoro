@@ -9,7 +9,7 @@ import it.scalachikoro.server.MyIdGenerator
 import it.scalachikoro.server.game.GameActor
 
 object LobbyActor {
-  def props(): Props = Props(new LobbyActor())
+  def props(): Props = Props(new LobbyActor()).withDeploy()
 
   def player(name: String, ref: ActorRef): PlayerRef = new PlayerRef(ref, MyIdGenerator generateUniqueId(), name)
 }
@@ -57,6 +57,10 @@ class LobbyActor extends MyActor {
     val matchActor = context.actorOf(GameActor.props(players.size))
     matchActor ! Start(players)
     this log f"Start Game Actor with ${players.map(_.name)} players."
+  }
+
+  override def preStart(): Unit = {
+
   }
 
   log(f"I'm listening")
