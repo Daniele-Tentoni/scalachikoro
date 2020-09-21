@@ -14,23 +14,17 @@ case class Game(players: Seq[PlayerKoro], deck: Deck) {
       this
   }
 
-  private def getSecureRandom: Int = {
-    val r: SecureRandom = new SecureRandom()
-    val seed = r.generateSeed(32)
-    r.nextBytes(seed)
-    seed.hashCode() % 6 + 1
-  }
-
-  def rollDice(n: Int, id: String): (Game, Int) = {
-    val roll = (0 to n).fold(0)((acc, _) => acc + getSecureRandom)
-    val newPlayers = players.foldLeft(Seq.empty[PlayerKoro]) { (acc, i) => {
+  def applyDiceResult(n: Int, id: String): Seq[PlayerKoro] = {
+    players.foldLeft(Seq.empty[PlayerKoro]) { (acc, i) => {
+      // Get if the player is in turn or not.
       val inTurn = i.id == id
-      val gain = i.boardCards.foldLeft(0)((acc, i) => acc + i.trigger(roll, inTurn))
+      // Calculate all rewards for this player.
+      val gain = i.boardCards.foldLeft(0)((acc, i) => acc + i.trigger(n, inTurn))
+      // Give to a player his gain.
       val p = i.receive(gain)
       p +: acc
     }
     }
-    (copy(players = newPlayers), roll)
   }
 
   def playerWon: Boolean = players.forall(_.hasWon)
@@ -38,5 +32,17 @@ case class Game(players: Seq[PlayerKoro], deck: Deck) {
 }
 
 object Game {
+
+  protected def getSecureRandom: Int = {
+    val r: SecureRandom = new SecureRandom()
+    val seed = r.generateSeed(32)
+    r.nextBytes(seed)
+    seed.hashCode() % 6 + 1
+  }
+
+  def rollDice(n: Int): Int = {
+    (0 to n).fold(0)((acc, _) => acc + getSecureRandom)
+  }
+
   def apply(players: Seq[PlayerKoro]): Game = new Game(players, Deck.shuffled)
 }

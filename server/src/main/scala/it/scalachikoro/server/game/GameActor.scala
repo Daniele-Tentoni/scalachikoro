@@ -24,7 +24,7 @@ class GameActor(playersNumber: Int) extends MyActor {
       require(players.size == playersNumber)
       println(f"Start a match with ${players.map(_.name)}. Waiting for their acceptance.")
       turn = Turn(players)
-      broadcastMessage(players.map(_.actorRef), GameFound())
+      broadcastMessage(players.map(_.actorRef), GameInvitation())
       context.become(initializing(Seq.empty) orElse terminated)
   }
 
@@ -57,16 +57,17 @@ class GameActor(playersNumber: Int) extends MyActor {
     context.become(inTurn(game, turn.get) orElse terminated)
   }
 
-  private def inTurn(value: Game, ref: PlayerRef): Receive = {
+  private def inTurn(game: Game, ref: PlayerRef): Receive = {
     case RollDice(n) if ref.actorRef == sender =>
-      val newState = value.rollDice(n, ref.id)
-      broadcastMessage(turn.all.map(_.actorRef), DiceRolled(newState._2))
+      val result = game.rollDice(n)
+      broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result))
       // TODO: Give and Receive moneys.
-      context.become(inTurn(newState._1, turn.get) orElse terminated)
+      val players = game.applyDiceResult(result, ref.id)
+      context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
     case Acquire(card) if ref.actorRef == sender =>
-      val newState = value.acquireCard(card, ref.id)
+      val newState = game.acquireCard(card, ref.id)
       // TODO: Check if player have acquired the card.
-      broadcastMessage(turn.all.map(_.actorRef), Acquired(ref))
+      broadcastMessage(turn.all.map(_.actorRef), Acquired(card, ref))
       // TODO: Go through only if player have acquired the card.
       nextTurn()
     case EndTurn() if ref.actorRef == sender => nextTurn()

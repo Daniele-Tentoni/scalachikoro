@@ -3,7 +3,7 @@ package it.scalachikoro.client.actors
 import akka.actor.{PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{Drop, GameFound, Start}
+import it.scalachikoro.messages.GameMessages.{Drop, GameInvitation, Start}
 import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,7 +36,7 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
       context become (discovered orElse terminated)
       listener queueLeft name
 
-    case GameFound() =>
+    case GameInvitation() =>
       this log "Game found"
       context become (inactive orElse terminated)
       listener matchFound(name, sender)

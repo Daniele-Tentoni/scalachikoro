@@ -5,7 +5,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{GameFound, Start}
+import it.scalachikoro.messages.GameMessages.{GameInvitation, Start}
 import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
@@ -46,7 +46,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
     }
 
     "notify the listener on Game Found" in {
-      mockActor ! GameFound()
+      mockActor ! GameInvitation()
       mockListener.matchFound _ verify(*, *) once()
     }
 
