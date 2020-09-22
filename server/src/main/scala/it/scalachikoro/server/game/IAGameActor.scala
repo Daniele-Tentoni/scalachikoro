@@ -16,13 +16,13 @@ object IAGameActor {
 class IAGameActor(server: ActorRef) extends MyActor {
   def receive: Receive = {
     case GameState(state) =>
-      context become (gameStarted(GameState(state) orElse terminated)
+      context become (gameStarted(GameState(state)) orElse terminated)
   }
 
   def gameStarted(game: GameState): Receive = {
     case PlayerTurn() =>
       this log f"Must start the turn"
-      val result = Game.rollDice(1) // TODO: Change number of dices dynamically.
+      val result = Game.roll(1) // TODO: Change number of dices dynamically.
       this log f"Dice rolled for $result"
       server ! DiceRolled(result, PlayerRef(self, "", ""))
 

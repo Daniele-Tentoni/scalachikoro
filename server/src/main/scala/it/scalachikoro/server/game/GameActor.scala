@@ -5,6 +5,7 @@ import it.scalachikoro.actors.MyActor
 import it.scalachikoro.koro.game.{Game, Turn}
 import it.scalachikoro.koro.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
+import it.scalachikoro.messages.LobbyMessages.Start
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
@@ -59,11 +60,11 @@ class GameActor(playersNumber: Int) extends MyActor {
 
   private def inTurn(game: Game, ref: PlayerRef): Receive = {
     case RollDice(n) if ref.actorRef == sender =>
-      val result = game.rollDice(n)
-      broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result))
+      val result = Game.roll(n)
+      broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result, ref))
       // TODO: Give and Receive moneys.
       val players = game.applyDiceResult(result, ref.id)
-      context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
+      // context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
     case Acquire(card) if ref.actorRef == sender =>
       val newState = game.acquireCard(card, ref.id)
       // TODO: Check if player have acquired the card.

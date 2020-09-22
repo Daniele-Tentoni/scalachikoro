@@ -14,18 +14,11 @@ case class Game(players: Seq[PlayerKoro], deck: Deck) {
       this
   }
 
-  def applyDiceResult(n: Int, id: String): Seq[PlayerKoro] = {
-    players.foldLeft(Seq.empty[PlayerKoro]) { (acc, i) => {
-      // Get if the player is in turn or not.
-      val inTurn = i.id == id
-      // Calculate all rewards for this player.
-      val gain = i.boardCards.foldLeft(0)((acc, i) => acc + i.trigger(n, inTurn))
-      // Give to a player his gain.
-      val p = i.receive(gain)
-      p +: acc
-    }
-    }
-  }
+  def applyDiceResult(n: Int, id: String): Seq[Operation] = players.find(_.id == id).map(p => {
+    val incomes = p.calculateIncomes(n)
+    val taxes = players.filterNot(_.id == id).flatMap(o => p.calculateTaxes(n, o))
+    incomes ++ taxes
+  }).getOrElse(Seq.empty)
 
   def playerWon: Boolean = players.forall(_.hasWon)
 
@@ -40,7 +33,13 @@ object Game {
     seed.hashCode() % 6 + 1
   }
 
-  def rollDice(n: Int): Int = {
+  /**
+   * Roll many dices.
+   *
+   * @param n Number of dices.
+   * @return Result.
+   */
+  def roll(n: Int): Int = {
     (0 to n).fold(0)((acc, _) => acc + getSecureRandom)
   }
 

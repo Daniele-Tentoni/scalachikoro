@@ -5,8 +5,8 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{GameInvitation, Start}
-import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
+import it.scalachikoro.messages.GameMessages.GameInvitation
+import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -30,7 +30,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on game state updated" in {
       mockActor ! Hi(name)
-      mockListener.welcomed _ verify (name, noSender) once()
+      mockListener.welcomed _ verify (name, *) once()
     }
 
     "notify the listener on queue done" in {
@@ -40,14 +40,15 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
       mockListener.queued _ verify (id, name, 1) once()
     }
 
+    "notify the listener on Game Found" in {
+      pending
+      mockActor ! GameInvitation()
+      mockListener.matchFound _ verify(*, *) once()
+    }
+
     "notify the listener on queue left" in {
       mockActor ! LeftQueue()
       mockListener.queueLeft _ verify * once()
-    }
-
-    "notify the listener on Game Found" in {
-      mockActor ! GameInvitation()
-      mockListener.matchFound _ verify(*, *) once()
     }
 
     "notify the listener on Game Start" in {

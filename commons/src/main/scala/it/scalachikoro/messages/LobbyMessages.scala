@@ -97,6 +97,11 @@ object GameMessages {
 
   case class RollDice(n: Int)
 
+  /**
+   * A Player have rolled dices.
+   * @param result Result of roll.
+   * @param ref Player Reference.
+   */
   case class DiceRolled(result: Int, ref: PlayerRef)
 
   case class Receive(n: Int)

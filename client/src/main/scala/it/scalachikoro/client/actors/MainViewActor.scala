@@ -3,8 +3,8 @@ package it.scalachikoro.client.actors
 import akka.actor.{PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
 import it.scalachikoro.client.controllers.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.{Drop, GameInvitation, Start}
-import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
+import it.scalachikoro.messages.GameMessages.GameInvitation
+import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
@@ -38,16 +38,12 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
 
     case GameInvitation() =>
       this log "Game found"
-      context become (inactive orElse terminated)
       listener matchFound(name, sender)
 
     case Start(players) =>
       this log f"Start message received with $players"
-      context become inactive
+      context become (inactive orElse terminated)
     // TODO: Generate new view.
-
-    case Drop() =>
-    // TODO: Drop the game and return to not in queue.
 
     case _ => this log f"Received unknown message"
   }

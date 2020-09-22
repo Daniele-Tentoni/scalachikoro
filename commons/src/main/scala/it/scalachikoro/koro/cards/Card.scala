@@ -1,101 +1,124 @@
 package it.scalachikoro.koro.cards
 
 import it.scalachikoro.koro.cards.CardType._
-import it.scalachikoro.koro.cards.InTurn.InTurnCode
+import it.scalachikoro.koro.cards.Icon.{Bread, Cow, Cup, Factory, Fruit, Gear, Wheat}
+import it.scalachikoro.koro.game.Operation
+import it.scalachikoro.koro.players.PlayerKoro
 
-sealed class InTurn(code: InTurnCode) {
-  def check(turn: Boolean): Boolean =
-    code == 2 ||
-      turn && (code == 0) ||
-      !turn && (code == 1)
-}
+sealed class CardType(name: String)
 
-object InTurn {
-  type InTurnCode = Int
+sealed class Icon(val icon: String)
 
-  case class PlayerTurn() extends InTurn(0)
+object Icon {
 
-  case class OtherPlayerTurn() extends InTurn(1)
+  case class Wheat() extends Icon("Wheat")
 
-  case class BothPlayerTurn() extends InTurn(2)
+  case class Cow() extends Icon("Cow")
 
-  case class NoPlayerTurn() extends InTurn(3)
+  case class Gear() extends Icon("Gear")
 
-  implicit def int2turn(i: Int): InTurn = i match {
-    case 0 => PlayerTurn()
-    case 1 => OtherPlayerTurn()
-    case 2 => BothPlayerTurn()
-    case _ => NoPlayerTurn()
-  }
-}
+  case class Bread() extends Icon("Bread")
 
-sealed class CardType(name: String, icon: String, activation: Seq[Int], inTurn: InTurn) {
-  def trigger(n: Int, playersTurn: Boolean): Boolean = (activation contains n) && (inTurn check playersTurn)
+  case class Factory() extends Icon("Factory")
+
+  case class Fruit() extends Icon("Fruit")
+
+  case class Cup() extends Icon("Cup")
+
+  case class Major() extends Icon("Major")
+
 }
 
 object CardType {
 
-  case class Landmark() extends CardType("Landmark", "L", Seq.empty, 0)
+  case class Landmark() extends CardType("Landmark")
 
-  case class PrimaryIndustry(activation: Seq[Int]) extends CardType("Primary Industry", "P", activation, 2)
+  // TODO: This have fixed income.
+  case class PrimaryIndustry(activation: Seq[Int]) extends CardType("Primary Industry") with MayTrigger
 
-  case class SecondaryIndustry(activation: Seq[Int]) extends CardType("Secondary Industry ", "S", activation, 0)
+  // TODO: This produce for each instance of Primary
+  case class SecondaryIndustry(activation: Seq[Int], subType: Icon) extends CardType("Secondary Industry ") with MayTrigger
 
-  case class Restaurants(activation: Seq[Int]) extends CardType("Restaurants", "R", activation, 1)
+  // TODO: This take income from other Players.
+  case class Restaurants(activation: Seq[Int]) extends CardType("Restaurants") with MayTrigger
 
-  case class Major(activation: Seq[Int]) extends CardType("Major Establishment", "M", activation, 0)
+  case class Major(activation: Seq[Int]) extends CardType("Major Establishment") with MayTrigger
 
 }
 
-case class Card(name: String, cost: Int, cType: CardType, copies: Int) {
-  def all: Seq[Card] = (0 until copies).map(_ => copy())
+trait Acquirable {
+  val cost: Int
 
-  // TODO: Implement trigger invocation.
-  def trigger(n: Int, inTurn: Boolean): Int = if (cType.trigger(n, inTurn)) 1 else 0
+  def canAcquire(money: Int): Boolean = money >= cost
+}
+
+trait MayTrigger {
+  val activation: Seq[Int]
+
+  def trigger(n: Int): Boolean = activation contains n
+}
+
+case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: Int, quantity: Int, img: String = "") extends Acquirable {
+  def all: Seq[Card] = (0 until quantity).map(_ => copy())
+
+  def trigger(n: Int, turn: Boolean): Boolean = cType match {
+    case PrimaryIndustry(activation) => activation contains n
+    case Restaurants(activation) => (activation contains n) && !turn
+    case SecondaryIndustry(activation, _) => (activation contains n) && turn
+    case _ => false
+  }
+
+  def income(player: PlayerKoro): Operation = cType match {
+    case Restaurants(_) => Operation.Give(income, player)
+    case PrimaryIndustry(_) => Operation.Receive(income, player)
+    case SecondaryIndustry(_, sub) => Operation.Receive(income * player.cards.count(_.icon.icon == sub.icon), player)
+  }
 }
 
 object AimCard {
-  def TrainStation: Card = Card("Train Station", 2, Landmark(), 1)
 
-  def ShoppingHall: Card = Card("Shopping Hall", 2, Landmark(), 1)
+  def TrainStation: Card = Card("Train Station", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def AmusementPark: Card = Card("Amusement Park", 2, Landmark(), 1)
+  def ShoppingHall: Card = Card("Shopping Hall", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def RadioTower: Card = Card("Radio Tower", 2, Landmark(), 1)
+  def AmusementPark: Card = Card("Amusement Park", Landmark(), Icon.Major(), 1, 1, 1)
+
+  def RadioTower: Card = Card("Radio Tower", Landmark(), Icon.Major(), 1, 1, 1)
 
   def all: Seq[Card] = Seq(TrainStation, ShoppingHall, AmusementPark, RadioTower)
 }
 
 object Card {
-  def WheatField: Card = Card("Wheat Field", 1, PrimaryIndustry(Seq(1)), 6)
 
-  def Ranch: Card = Card("Ranch", 1, PrimaryIndustry(Seq(2)), 6)
+  def WheatField: Card = Card("Wheat Field", PrimaryIndustry(Seq(1)), Wheat(), 1, 1, 6)
 
-  def Forest: Card = Card("Forest", 3, PrimaryIndustry(Seq(5)), 6)
+  def Ranch: Card = Card("Ranch", PrimaryIndustry(Seq(2)), Cow(), 1, 2, 6)
 
-  def Mine: Card = Card("Mine", 6, PrimaryIndustry(Seq(9)), 6)
+  def Forest: Card = Card("Forest", PrimaryIndustry(Seq(5)), Gear(), 3, 5, 6)
 
-  def AppleOrchard: Card = Card("Apple Orchard", 3, PrimaryIndustry(Seq(10)), 6)
+  def Mine: Card = Card("Mine", PrimaryIndustry(Seq(9)), Gear(), 6, 9, 6)
 
-  def Bakery: Card = Card("Bakery", 1, SecondaryIndustry(Seq(2, 3)), 6)
+  def AppleOrchard: Card = Card("Apple Orchard", PrimaryIndustry(Seq(10)), Wheat(), 3, 10, 6)
 
-  def ConvStore: Card = Card("Convenience Store", 1, SecondaryIndustry(Seq(4)), 6)
+  def Bakery: Card = Card("Bakery", SecondaryIndustry(Seq(2, 3), Wheat()), Bread(), 1, 1, 6)
 
-  def CheeseFact: Card = Card("Cheese Factory", 1, SecondaryIndustry(Seq(7)), 6)
+  def ConvStore: Card = Card("Convenience Store", SecondaryIndustry(Seq(4), Wheat()), Bread(), 1, 1, 6)
 
-  def FurnitureFact: Card = Card("Furniture Factory", 1, SecondaryIndustry(Seq(8)), 6)
+  def CheeseFact: Card = Card("Cheese Factory", SecondaryIndustry(Seq(7), Wheat()), Factory(), 1, 1, 6)
 
-  def FruitMarket: Card = Card("Fruit and Vegetable Market", 1, SecondaryIndustry(Seq(11, 12)), 6)
+  def FurnitureFact: Card = Card("Furniture Factory", SecondaryIndustry(Seq(8), Gear()), Factory(), 1, 1, 6)
 
-  def Cafe: Card = Card("Cafe'", 1, Restaurants(Seq(3)), 6)
+  def FruitMarket: Card = Card("Fruit and Vegetable Market", SecondaryIndustry(Seq(11, 12), Wheat()), Fruit(), 1, 1, 6)
 
-  def FamilyRest: Card = Card("Family Restaurant", 1, Restaurants(Seq(9, 10)), 6)
+  def Cafe: Card = Card("Cafe'", Restaurants(Seq(3)), Cup(), 1, 1, 6)
 
-  def Stadium: Card = Card("Stadium", 1, Major(Seq(6)), 4)
+  def FamilyRest: Card = Card("Family Restaurant", Restaurants(Seq(9, 10)), Cup(), 1, 1, 6)
 
-  def TVStation: Card = Card("TV Station", 1, Major(Seq(6)), 4)
+  def Stadium: Card = Card("Stadium", Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
-  def BusinessCenter: Card = Card("Business Center", 1, Major(Seq(6)), 4)
+  def TVStation: Card = Card("TV Station", Major(Seq(6)), Icon.Major(), 1, 1, 4)
+
+  def BusinessCenter: Card = Card("Business Center", Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
   def starterCards = Seq(WheatField, Bakery)
 

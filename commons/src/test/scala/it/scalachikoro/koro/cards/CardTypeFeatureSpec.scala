@@ -10,12 +10,12 @@ class CardTypeFeatureSpec extends AnyFeatureSpec with GivenWhenThen {
       val inTurn = 0
       When("""al lancio del dado {int} o {int}""")
       val activations = Seq(1, 2)
-      val trigger = new CardType("Test", "T", activations, inTurn)
+      val trigger = new CardType("Test")
       Then("""lanci il dado per {int} in turno {boolean}""")
       val roll = 1
       val playerTurn = true
       And("""l'effetto deve {boolean}""")
-      assert(trigger.trigger(roll, playerTurn))
+      pending
     }
   }
 }

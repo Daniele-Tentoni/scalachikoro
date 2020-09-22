@@ -2,6 +2,7 @@ package it.scalachikoro.koro.players
 
 import it.scalachikoro.koro.cards.{AimCard, Card}
 import it.scalachikoro.koro.cards.CardType.PrimaryIndustry
+import it.scalachikoro.koro.cards.Icon.Wheat
 import org.scalatest.wordspec.AnyWordSpec
 
 class PlayerKoroSpec extends AnyWordSpec {
@@ -9,11 +10,11 @@ class PlayerKoroSpec extends AnyWordSpec {
     val p = PlayerKoro.init("1", "Test")
     "at Start" should {
       "receive starter cards" in {
-        assertResult(Card.starterCards)(p.boardCards)
+        assertResult(Card.starterCards)(p.cards)
       }
     }
     "in game" should {
-      val c = Card("Test", 1, PrimaryIndustry(Seq(1)), 1)
+      val c = Card("Test", PrimaryIndustry(Seq(1)), Wheat(), 1, 1, 1)
       "not buy a card if haven't much moneys" in {
         assert(!p.canAcquire(c))
       }
@@ -27,7 +28,7 @@ class PlayerKoroSpec extends AnyWordSpec {
       }
       "acquire a card" in {
         val q = p.receive(1).acquire(c)
-        assert(q.boardCards.contains(c))
+        assert(q.cards.contains(c))
       }
       "don't acquire if have max copies" in {
         val q = p.receive(1).acquire(c)
@@ -35,7 +36,7 @@ class PlayerKoroSpec extends AnyWordSpec {
       }
       "have won if have all aim cards" in {
         assert(!p.hasWon)
-        val w = PlayerKoro("Test", "Test", 0, Card("Test", 1, PrimaryIndustry(Seq(1)), 1) +: AimCard.all)
+        val w = PlayerKoro("Test", "Test", 0, Card("Test", PrimaryIndustry(Seq(1)), Wheat(), 1, 1, 1) +: AimCard.all)
         assert(w.hasWon)
       }
     }

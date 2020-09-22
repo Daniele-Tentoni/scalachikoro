@@ -3,13 +3,12 @@ package it.scalachikoro.server.lobby
 import akka.actor.{ActorRef, Props}
 import it.scalachikoro.actors.MyActor
 import it.scalachikoro.koro.players.PlayerRef
-import it.scalachikoro.messages.GameMessages.Start
 import it.scalachikoro.messages.LobbyMessages._
 import it.scalachikoro.server.MyIdGenerator
 import it.scalachikoro.server.game.GameActor
 
 object LobbyActor {
-  def props(): Props = Props(new LobbyActor()).withDeploy()
+  def props(): Props = Props(new LobbyActor())
 
   def player(name: String, ref: ActorRef): PlayerRef = new PlayerRef(ref, MyIdGenerator generateUniqueId(), name)
 }

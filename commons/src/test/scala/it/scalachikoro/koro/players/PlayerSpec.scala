@@ -6,22 +6,20 @@ import org.scalatest.funspec.AnyFunSpec
 class PlayerSpec extends AnyFunSpec {
   describe("A Player") {
     val player = PlayerKoro("Test", "1", 0, Seq.empty[Card])
-    val more = player.receive(4)
-    val less = more.give(2)
-    val nothing = less._1.give(3)
     it("Doesn't have money") {
       assertResult(0)(player.money)
     }
+    val more = player.receive(4)
     it("Have money") {
       assertResult(4)(more.money)
     }
+    val less = more.give(2)
     it("Give some money") {
-      assertResult(2)(less._1.money)
-      assertResult(2)(less._2)
+      assertResult(2)(less.money)
     }
+    val nothing = less.give(3)
     it("Give all money") {
-      assertResult(0)(nothing._1.money)
-      assertResult(2)(nothing._2)
+      assertResult(0)(nothing.money)
     }
   }
 }
