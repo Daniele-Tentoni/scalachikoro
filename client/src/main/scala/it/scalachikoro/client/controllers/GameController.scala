@@ -49,7 +49,7 @@ trait GameEventListener {
 }
 
 class GameController(system: ActorSystem, app: JFXApp) extends Controller with GameEventListener {
-  private var gameStage: GameStage = _
+  private[this] var gameStage: GameStage = _
 
   /**
    * @inheritdoc

@@ -35,7 +35,7 @@ case class QueueScene(name: String, listener: MainViewActorListener) extends Bas
     bottomBar loading true
   }
 
-  private def enqueue(): Unit = {
+  private[this] def enqueue(): Unit = {
     bottomBar message "Leaving queue"
     bottomBar loading true
     listener leaveQueue()

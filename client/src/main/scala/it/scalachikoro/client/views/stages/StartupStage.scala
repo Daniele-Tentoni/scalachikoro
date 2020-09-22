@@ -22,8 +22,8 @@ object StartupStage {
 
   // TODO: Document this.
   private case class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
-    private val mainScene: BaseScene = StartupScene(listener)
-    private var currentScene: BaseScene = mainScene // TODO: Change to a Scene Stack?
+    private[this] val mainScene: BaseScene = StartupScene(listener)
+    private[this] var currentScene: BaseScene = mainScene // TODO: Change to a Scene Stack?
 
     scene = mainScene
     onCloseRequest = _ => System.exit(0)

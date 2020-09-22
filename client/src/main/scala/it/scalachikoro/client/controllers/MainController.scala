@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import scalafx.application.JFXApp
 
 class MainController(app: JFXApp) extends Controller {
-  private val client: ActorSystem = ActorSystem("Client")
-  private val startup = new StartupController(client, app)
+  private[this] val client: ActorSystem = ActorSystem("Client")
+  private[this] val startup = new StartupController(client, app)
 
   /**
    * @inheritdoc

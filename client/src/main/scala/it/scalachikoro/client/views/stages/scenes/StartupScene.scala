@@ -42,7 +42,7 @@ case class StartupScene(listener: MainViewActorListener) extends BaseScene {
   // This take mainContent from the parent scene.
   mainContent.center = center
 
-  private def submit(): Unit = {
+  private[this] def submit(): Unit = {
     val username: String = usernameField.getText
     val server: String = serverField.getText
     val port: String = portField.getText

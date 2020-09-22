@@ -77,7 +77,7 @@ trait MainViewActorListener {
 }
 
 class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
-  private val startUpStage = StartupStage(this)
+  private[this] val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
   var player: PlayerRef = PlayerRef(noSender, "", "")
   val gameController = new GameController(system, app)
@@ -158,7 +158,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    * @inheritdoc
    */
   override def queueLeft(name: String): Unit = Platform runLater {
-    KoroAlert info("Sad", "I'm sad.") showAndWait()
+    startUpStage enqueued()
   }
 
   /**
@@ -193,7 +193,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    *
    * @param f Function to invoke.
    */
-  private def withServerLobbyRef(f: ActorRef => Unit): Unit = {
+  private[this] def withServerLobbyRef(f: ActorRef => Unit): Unit = {
     this.serverLobbyRef match {
       case Some(ref) => f(ref)
       case None => println(f"No server actor.")

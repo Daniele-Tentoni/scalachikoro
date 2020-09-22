@@ -64,7 +64,7 @@ class GameActor(playersNumber: Int) extends MyActor {
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result, ref))
       // TODO: Give and Receive moneys.
       val players = game.applyDiceResult(result, ref.id)
-      // context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
+    // context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
     case Acquire(card) if ref.actorRef == sender =>
       val newState = game.acquireCard(card, ref.id)
       // TODO: Check if player have acquired the card.
