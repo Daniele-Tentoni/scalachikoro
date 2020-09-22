@@ -10,11 +10,11 @@ import scalafx.scene.layout.HBox
  * Provide the basic bottom bar with a message and a loading indicator.
  */
 class BottomBarBox extends HBox {
-  private val progress: ProgressIndicator = new ProgressIndicator() {
+  private[this] val progress: ProgressIndicator = new ProgressIndicator() {
     maxHeight = 30
     visible = false
   }
-  private val messageContainer: Label = Label("")
+  private[this] val messageContainer: Label = Label("")
   messageContainer.alignment = Pos.BaselineCenter
   alignment = BottomRight
   children.addAll(progress, messageContainer)

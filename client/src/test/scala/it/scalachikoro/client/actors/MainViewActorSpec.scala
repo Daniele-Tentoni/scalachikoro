@@ -1,6 +1,5 @@
 package it.scalachikoro.client.actors
 
-import akka.actor.ActorRef.noSender
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
@@ -18,7 +17,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
   with MockFactory {
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
 
-  private def provideListener = stub[MainViewActorListener]
+  private[this] def provideListener = stub[MainViewActorListener]
 
   val name = "Test Actor"
 
@@ -30,14 +29,14 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
     "notify the listener on game state updated" in {
       mockActor ! Hi(name)
-      mockListener.welcomed _ verify (name, *) once()
+      mockListener.welcomed _ verify(name, *) once()
     }
 
     "notify the listener on queue done" in {
       val id = "1"
       mockActor ! Queued(id, 1)
       pending
-      mockListener.queued _ verify (id, name, 1) once()
+      mockListener.queued _ verify(id, name, 1) once()
     }
 
     "notify the listener on Game Found" in {

@@ -24,7 +24,7 @@ case class QueueScene(name: String, listener: MainViewActorListener) extends Bas
   center.getChildren.addAll(usernameLabel, btnQueue, btnLeave)
   mainContent.center = center
 
-  private def queue(): Unit = {
+  private[this] def queue(): Unit = {
     bottomBar message "Entering queue"
     bottomBar loading true
     listener queue name

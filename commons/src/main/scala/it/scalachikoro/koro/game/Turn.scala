@@ -11,8 +11,8 @@ trait Turn[T] {
 object Turn {
   def apply[T](items: Seq[T]): Turn[T] = new TurnImpl[T](items)
 
-  private class TurnImpl[T](items: Seq[T]) extends Turn[T] {
-    private var index = 0
+  private[this] class TurnImpl[T](items: Seq[T]) extends Turn[T] {
+    private[this] var index = 0
 
     override def get: T = items(index)
 

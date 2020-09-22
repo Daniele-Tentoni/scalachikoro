@@ -19,14 +19,14 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
   def lobby: Receive = {
     case Hi(remote) =>
       this log f"$remote said Hi!"
-      context become(discovered orElse terminated)
+      context become (discovered orElse terminated)
       listener welcomed(name, sender)
   }
 
   def discovered: Receive = {
     case Queued(id, others) =>
       this log f"We are queue with id: $id."
-      context become(queued orElse terminated)
+      context become (queued orElse terminated)
       listener queued(id, name, others)
   }
 
@@ -42,6 +42,7 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
 
     case Start(players) =>
       this log f"Start message received with $players"
+      listener gameStarted()
       context become (inactive orElse terminated)
     // TODO: Generate new view.
 
@@ -52,7 +53,7 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
     case _ => this log "Received an unknown message."
   }
 
-  private def terminated: Receive = {
+  private[this] def terminated: Receive = {
     case Terminated(_) =>
       System.err.println(f"Actor ${self.path} terminated.")
       context.system.scheduler.scheduleOnce(20.second) {

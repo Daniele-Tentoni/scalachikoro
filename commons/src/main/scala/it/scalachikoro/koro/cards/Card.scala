@@ -1,7 +1,7 @@
 package it.scalachikoro.koro.cards
 
 import it.scalachikoro.koro.cards.CardType._
-import it.scalachikoro.koro.cards.Icon.{Bread, Cow, Cup, Factory, Fruit, Gear, Wheat}
+import it.scalachikoro.koro.cards.Icon._
 import it.scalachikoro.koro.game.Operation
 import it.scalachikoro.koro.players.PlayerKoro
 
@@ -77,52 +77,52 @@ case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: In
 
 object AimCard {
 
-  def TrainStation: Card = Card("Train Station", Landmark(), Icon.Major(), 1, 1, 1)
+  def trainStation: Card = Card("Train Station", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def ShoppingHall: Card = Card("Shopping Hall", Landmark(), Icon.Major(), 1, 1, 1)
+  def shoppingHall: Card = Card("Shopping Hall", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def AmusementPark: Card = Card("Amusement Park", Landmark(), Icon.Major(), 1, 1, 1)
+  def amusementPark: Card = Card("Amusement Park", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def RadioTower: Card = Card("Radio Tower", Landmark(), Icon.Major(), 1, 1, 1)
+  def radioTower: Card = Card("Radio Tower", Landmark(), Icon.Major(), 1, 1, 1)
 
-  def all: Seq[Card] = Seq(TrainStation, ShoppingHall, AmusementPark, RadioTower)
+  def all: Seq[Card] = Seq(trainStation, shoppingHall, amusementPark, radioTower)
 }
 
 object Card {
 
-  def WheatField: Card = Card("Wheat Field", PrimaryIndustry(Seq(1)), Wheat(), 1, 1, 6)
+  def wheatField: Card = Card("Wheat Field", PrimaryIndustry(Seq(1)), Wheat(), 1, 1, 6)
 
-  def Ranch: Card = Card("Ranch", PrimaryIndustry(Seq(2)), Cow(), 1, 2, 6)
+  def ranch: Card = Card("Ranch", PrimaryIndustry(Seq(2)), Cow(), 1, 2, 6)
 
-  def Forest: Card = Card("Forest", PrimaryIndustry(Seq(5)), Gear(), 3, 5, 6)
+  def forest: Card = Card("Forest", PrimaryIndustry(Seq(5)), Gear(), 3, 5, 6)
 
-  def Mine: Card = Card("Mine", PrimaryIndustry(Seq(9)), Gear(), 6, 9, 6)
+  def mine: Card = Card("Mine", PrimaryIndustry(Seq(9)), Gear(), 6, 9, 6)
 
-  def AppleOrchard: Card = Card("Apple Orchard", PrimaryIndustry(Seq(10)), Wheat(), 3, 10, 6)
+  def appleOrchard: Card = Card("Apple Orchard", PrimaryIndustry(Seq(10)), Wheat(), 3, 10, 6)
 
-  def Bakery: Card = Card("Bakery", SecondaryIndustry(Seq(2, 3), Wheat()), Bread(), 1, 1, 6)
+  def bakery: Card = Card("Bakery", SecondaryIndustry(Seq(2, 3), Wheat()), Bread(), 1, 1, 6)
 
-  def ConvStore: Card = Card("Convenience Store", SecondaryIndustry(Seq(4), Wheat()), Bread(), 1, 1, 6)
+  def convStore: Card = Card("Convenience Store", SecondaryIndustry(Seq(4), Wheat()), Bread(), 1, 1, 6)
 
-  def CheeseFact: Card = Card("Cheese Factory", SecondaryIndustry(Seq(7), Wheat()), Factory(), 1, 1, 6)
+  def cheeseFact: Card = Card("Cheese Factory", SecondaryIndustry(Seq(7), Wheat()), Factory(), 1, 1, 6)
 
-  def FurnitureFact: Card = Card("Furniture Factory", SecondaryIndustry(Seq(8), Gear()), Factory(), 1, 1, 6)
+  def furnitureFact: Card = Card("Furniture Factory", SecondaryIndustry(Seq(8), Gear()), Factory(), 1, 1, 6)
 
-  def FruitMarket: Card = Card("Fruit and Vegetable Market", SecondaryIndustry(Seq(11, 12), Wheat()), Fruit(), 1, 1, 6)
+  def fruitMarket: Card = Card("Fruit and Vegetable Market", SecondaryIndustry(Seq(11, 12), Wheat()), Fruit(), 1, 1, 6)
 
-  def Cafe: Card = Card("Cafe'", Restaurants(Seq(3)), Cup(), 1, 1, 6)
+  def cafe: Card = Card("Cafe'", Restaurants(Seq(3)), Cup(), 1, 1, 6)
 
-  def FamilyRest: Card = Card("Family Restaurant", Restaurants(Seq(9, 10)), Cup(), 1, 1, 6)
+  def familyRest: Card = Card("Family Restaurant", Restaurants(Seq(9, 10)), Cup(), 1, 1, 6)
 
-  def Stadium: Card = Card("Stadium", Major(Seq(6)), Icon.Major(), 1, 1, 4)
+  def stadium: Card = Card("Stadium", CardType.Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
-  def TVStation: Card = Card("TV Station", Major(Seq(6)), Icon.Major(), 1, 1, 4)
+  def tVStation: Card = Card("TV Station", CardType.Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
-  def BusinessCenter: Card = Card("Business Center", Major(Seq(6)), Icon.Major(), 1, 1, 4)
+  def businessCenter: Card = Card("Business Center", CardType.Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
-  def starterCards = Seq(WheatField, Bakery)
+  def starterCards = Seq(wheatField, bakery)
 
-  def all: Seq[Card] = WheatField.all ++ Ranch.all ++ Forest.all ++ Mine.all ++ AppleOrchard.all ++
-    Bakery.all ++ ConvStore.all ++ CheeseFact.all ++ FurnitureFact.all ++ FruitMarket.all ++ Cafe.all ++
-    FamilyRest.all ++ Stadium.all ++ TVStation.all ++ BusinessCenter.all
+  def all: Seq[Card] = wheatField.all ++ ranch.all ++ forest.all ++ mine.all ++ appleOrchard.all ++
+    bakery.all ++ convStore.all ++ cheeseFact.all ++ furnitureFact.all ++ fruitMarket.all ++ cafe.all ++
+    familyRest.all ++ stadium.all ++ tVStation.all ++ businessCenter.all
 }

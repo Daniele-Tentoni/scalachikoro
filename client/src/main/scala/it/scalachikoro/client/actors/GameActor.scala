@@ -1,13 +1,14 @@
 package it.scalachikoro.client.actors
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{ActorRef, Props}
+import it.scalachikoro.actors.MyActor
 import it.scalachikoro.messages.GameMessages._
 
 object GameActor{
   def props(name: String, remoteGameRef: ActorRef): Props = Props(new GameActor(name, remoteGameRef))
 }
 
-class GameActor(name: String, remoteGameRef: ActorRef) extends Actor {
+class GameActor(name: String, remoteGameRef: ActorRef) extends MyActor {
   def receive: Receive = {
     case GameState(state) =>
     case PlayerTurn() =>
@@ -17,7 +18,7 @@ class GameActor(name: String, remoteGameRef: ActorRef) extends Actor {
     case Give(n, from) =>
     case Acquired(card, player) =>
     case PlayerWon(player) =>
-    case _ => println(f"Received unknown message")
+    case a: Any => this log f"Received unknown message while in receive $a"
   }
 
   override def preStart(): Unit = {

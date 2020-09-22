@@ -7,7 +7,7 @@ trait GameStage extends BaseStage
 
 object GameStage {
 
-  private class GameStageImpl(listener: GameEventListener) extends GameStage {
+  private[this] class GameStageImpl(listener: GameEventListener) extends GameStage {
     private[this] val gameScene = GameScene(listener)
 
     scene = gameScene

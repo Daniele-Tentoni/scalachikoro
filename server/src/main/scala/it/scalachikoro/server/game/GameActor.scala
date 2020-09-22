@@ -20,16 +20,17 @@ class GameActor(playersNumber: Int) extends MyActor {
 
   override def receive: Receive = idle
 
-  private def idle: Receive = {
+  private[this] def idle: Receive = {
     case Start(players) =>
       require(players.size == playersNumber)
       println(f"Start a match with ${players.map(_.name)}. Waiting for their acceptance.")
       turn = Turn(players)
       broadcastMessage(players.map(_.actorRef), GameInvitation())
       context.become(initializing(Seq.empty) orElse terminated)
+    case a: Any => this log f"Received unknown message while in idle $a"
   }
 
-  private def initializing(readyPlayers: Seq[PlayerKoro]): Receive = {
+  private[this] def initializing(readyPlayers: Seq[PlayerKoro]): Receive = {
     case Accept(name) =>
       println(f"Player $name is ready")
       val player = turn.all.find(_.name == name)
@@ -48,17 +49,23 @@ class GameActor(playersNumber: Int) extends MyActor {
       }
     case Drop() =>
       context.become(terminated)
+    case a: Any => this log f"Received unknown message while in initializing $a"
   }
 
-  private def initializeGame(players: Seq[PlayerKoro]): Unit = {
+  private[this] def initializeGame(players: Seq[PlayerKoro]): Unit = {
     game = Game(players)
+    this log f"Initialized game $game."
     broadcastMessage(turn.all.map(_.actorRef), GameState(game))
+    this log f"Sent state to all players."
     turn.get.actorRef ! PlayerTurn
+    this log f"Sent player turn to correct player."
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
+    this log f"Sent opponent turn to correct players."
     context.become(inTurn(game, turn.get) orElse terminated)
+    this log f"Changed behaviour."
   }
 
-  private def inTurn(game: Game, ref: PlayerRef): Receive = {
+  private[this] def inTurn(game: Game, ref: PlayerRef): Receive = {
     case RollDice(n) if ref.actorRef == sender =>
       val result = Game.roll(n)
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result, ref))
@@ -72,15 +79,15 @@ class GameActor(playersNumber: Int) extends MyActor {
       // TODO: Go through only if player have acquired the card.
       nextTurn()
     case EndTurn() if ref.actorRef == sender => nextTurn()
-
+    case a: Any => this log f"Received unknown message while in inTurn $a"
   }
 
-  private def nextTurn(): Unit = {
+  private[this] def nextTurn(): Unit = {
     turn.next.actorRef ! PlayerTurn
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
   }
 
-  private def terminated: Receive = {
+  private[this] def terminated: Receive = {
     case Terminated(ref) =>
       turn.all.find(_.actorRef == ref) match {
         case Some(player) =>
@@ -92,11 +99,12 @@ class GameActor(playersNumber: Int) extends MyActor {
           }
         case _ => System.err.println(f"Client with ${ref.path} not found.");
       }
+    case a: Any => this log f"Received unknown message while in terminated $a"
   }
 
-  private def gameEnded(): Receive = {
+  private[this] def gameEnded(): Receive = {
     case _ => sender ! Drop() // TODO: Change this message.
   }
 
-  private def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs.foreach(_ ! message)
+  private[this] def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs.foreach(_ ! message)
 }

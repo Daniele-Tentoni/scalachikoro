@@ -36,10 +36,10 @@ object GameScene {
     center.getChildren.addAll(usernameLabel, btnDrop, diceLabel, roll1Btn, roll2Btn)
     mainContent.center = center
 
-    private def roll(n: Int): Unit = listener.roll(n)
+    private[this] def roll(n: Int): Unit = listener.roll(n)
   }
 
-  private def drop(): Unit = {
+  private[this] def drop(): Unit = {
     val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
     if (response.contains(ButtonType.OK)) {
       KoroAlert.info("Nooo", "Too bad. You can't drop.") showAndWait()
