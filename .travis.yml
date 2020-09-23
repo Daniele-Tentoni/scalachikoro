@@ -125,4 +125,4 @@ jobs:
       script:
         - sbt coverage test coverageReport coverageAggregate
         - bash <(curl -s https://codecov.io/bash)
-        - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+        - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r $HOME/target/scala-*/coverage-report/coberatura.xml
