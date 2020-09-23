@@ -46,7 +46,7 @@ lazy val scalaFXDep = javaFXModules.map(m =>
 /*
  * Scoverage configurations.
  */
-coverageMinimum := 50
+coverageMinimum := 25
 coverageFailOnMinimum := true
 
 /*
