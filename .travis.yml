@@ -122,7 +122,12 @@ jobs:
         - openjdk11
     # Send test statistics to other services.
     - stage: Test coverage reports
+      scala:
+        - 2.12.12
+      jdk: openjdk11
+      os: linux
+      dist: xenial
       script:
         - sbt coverage test coverageReport coverageAggregate
         - bash <(curl -s https://codecov.io/bash)
-        - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r $HOME/target/scala-*/coverage-report/coberatura.xml
+        - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r $HOME/target/scala-2.12/coverage-report/coberatura.xml
