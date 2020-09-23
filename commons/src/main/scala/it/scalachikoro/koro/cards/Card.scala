@@ -5,44 +5,44 @@ import it.scalachikoro.koro.cards.Icon._
 import it.scalachikoro.koro.game.Operation
 import it.scalachikoro.koro.players.PlayerKoro
 
-sealed class CardType(name: String)
-
-sealed class Icon(val icon: String)
+trait Icon
 
 object Icon {
 
-  case class Wheat() extends Icon("Wheat")
+  case class Wheat() extends Icon
 
-  case class Cow() extends Icon("Cow")
+  case class Cow() extends Icon
 
-  case class Gear() extends Icon("Gear")
+  case class Gear() extends Icon
 
-  case class Bread() extends Icon("Bread")
+  case class Bread() extends Icon
 
-  case class Factory() extends Icon("Factory")
+  case class Factory() extends Icon
 
-  case class Fruit() extends Icon("Fruit")
+  case class Fruit() extends Icon
 
-  case class Cup() extends Icon("Cup")
+  case class Cup() extends Icon
 
-  case class Major() extends Icon("Major")
+  case class Major() extends Icon
 
 }
 
+sealed class CardType()
+
 object CardType {
 
-  case class Landmark() extends CardType("Landmark")
+  case class Landmark() extends CardType()
 
   // TODO: This have fixed income.
-  case class PrimaryIndustry(activation: Seq[Int]) extends CardType("Primary Industry") with MayTrigger
+  case class PrimaryIndustry(activation: Seq[Int]) extends CardType() with MayTrigger
 
   // TODO: This produce for each instance of Primary
-  case class SecondaryIndustry(activation: Seq[Int], subType: Icon) extends CardType("Secondary Industry ") with MayTrigger
+  case class SecondaryIndustry(activation: Seq[Int], subType: Icon) extends CardType() with MayTrigger
 
   // TODO: This take income from other Players.
-  case class Restaurants(activation: Seq[Int]) extends CardType("Restaurants") with MayTrigger
+  case class Restaurants(activation: Seq[Int]) extends CardType() with MayTrigger
 
-  case class Major(activation: Seq[Int]) extends CardType("Major Establishment") with MayTrigger
+  case class Major(activation: Seq[Int]) extends CardType() with MayTrigger
 
 }
 
@@ -71,7 +71,7 @@ case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: In
   def income(player: PlayerKoro): Operation = cType match {
     case Restaurants(_) => Operation.Give(income, player)
     case PrimaryIndustry(_) => Operation.Receive(income, player)
-    case SecondaryIndustry(_, sub) => Operation.Receive(income * player.cards.count(_.icon.icon == sub.icon), player)
+    case SecondaryIndustry(_, sub) => Operation.Receive(income * player.cards.count(_.icon == sub), player)
   }
 }
 

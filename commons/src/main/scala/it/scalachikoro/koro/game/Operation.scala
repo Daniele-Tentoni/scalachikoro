@@ -2,7 +2,7 @@ package it.scalachikoro.koro.game
 
 import it.scalachikoro.koro.players.PlayerKoro
 
-trait Operation
+sealed class Operation
 
 object Operation{
 
