@@ -123,6 +123,6 @@ jobs:
     # Send test statistics to other services.
     - stage: Test coverage reports
       script:
-        - sbt coverage test coverageReport
+        - sbt coverage test coverageReport coverageAggregate
         - bash <(curl -s https://codecov.io/bash)
         - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
