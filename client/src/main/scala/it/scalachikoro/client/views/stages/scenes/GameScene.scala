@@ -1,20 +1,26 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.GameEventListener
+import it.scalachikoro.client.views.stages.scenes.components.SidePanel
 import it.scalachikoro.client.views.utils.KoroAlert
+import it.scalachikoro.koro.game.GameState
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, ButtonType, Label}
 import scalafx.scene.layout.VBox
 
-trait GameScene extends BaseScene
+trait GameScene extends BaseScene {
+  def updateGameState(state: GameState)
+}
+
+trait SideEventListener {
+  def drop()
+  def pass()
+}
 
 object GameScene {
 
-  private class GameSceneImpl(listener: GameEventListener) extends GameScene {
+  private class GameSceneImpl(listener: GameEventListener) extends GameScene with SideEventListener {
     // TODO: Add a background.
-    val usernameLabel: Label = Label("Username")
-    val btnDrop: Button = new Button("Drop game")
-    btnDrop.onAction = _ => drop()
 
     val diceLabel: Label = Label("Dice")
     val roll1Btn: Button = new Button("Roll one dice") {
@@ -29,22 +35,39 @@ object GameScene {
     // TODO: Add the player card list.
     // TODO: Add the deck card list.
 
-    val center: VBox = new VBox()
-    center.alignment = Pos.Center
-    center.spacing = 10
-    center.setMaxWidth(400)
-    center.getChildren.addAll(usernameLabel, btnDrop, diceLabel, roll1Btn, roll2Btn)
+    val center: VBox = new VBox() {
+      alignment = Pos.Center
+      maxWidth = 400
+      spacing = 10
+    }
+    center.getChildren.addAll(btnDrop, diceLabel, roll1Btn, roll2Btn)
     mainContent.center = center
 
-    private[this] def roll(n: Int): Unit = listener.roll(n)
-  }
+    val rightBar: SidePanel = SidePanel(this)
+    mainContent.right = rightBar
 
-  private[this] def drop(): Unit = {
-    val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
-    if (response.contains(ButtonType.OK)) {
-      KoroAlert.info("Nooo", "Too bad. You can't drop.") showAndWait()
-    } else {
-      KoroAlert.info("Well", "Well... Very well!") showAndWait()
+    private[this] def roll(n: Int): Unit = listener.roll(n)
+
+    override def updateGameState(state: GameState): Unit = state match {
+      case GameState.BrokenGameState(message) => KoroAlert.error("Error in GameState", message)
+      case GameState.LocalGameState(player, others, cards) =>
+        rightBar.username(player.name)
+        rightBar.addHistory("Update game state")
+
+      case _ =>
+    }
+
+    override def drop(): Unit = {
+      val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
+      if (response.contains(ButtonType.OK)) {
+        KoroAlert.info("Nooo", "Too bad. You can't drop.") showAndWait()
+      } else {
+        KoroAlert.info("Well", "Well... Very well!") showAndWait()
+      }
+    }
+
+    override def pass(): Unit = {
+      println("Pass")
     }
   }
 

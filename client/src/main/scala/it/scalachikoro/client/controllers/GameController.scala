@@ -82,6 +82,7 @@ class GameController(system: ActorSystem, app: JFXApp) extends Controller with G
   override def updateGameState(ref: ActorRef, state: GameState): Unit = {
     println("New game controller received.")
     gameActor = Some(system.actorOf(GameActor.props("game", this, ref)))
+    gameStage.updateGameState(state)
   }
 
   /**
