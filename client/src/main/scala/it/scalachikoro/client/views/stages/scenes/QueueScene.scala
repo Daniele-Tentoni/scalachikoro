@@ -1,6 +1,6 @@
 package it.scalachikoro.client.views.stages.scenes
 
-import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.VBox

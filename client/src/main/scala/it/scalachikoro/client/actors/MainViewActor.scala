@@ -2,7 +2,7 @@ package it.scalachikoro.client.actors
 
 import akka.actor.{PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import it.scalachikoro.messages.GameMessages.GameInvitation
 import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
 

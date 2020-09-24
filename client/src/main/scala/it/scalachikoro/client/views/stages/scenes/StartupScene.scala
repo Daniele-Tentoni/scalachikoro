@@ -1,6 +1,6 @@
 package it.scalachikoro.client.views.stages.scenes
 
-import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import it.scalachikoro.client.views.stages.scenes.components.IpTextFormatter
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Button, Label, TextField}

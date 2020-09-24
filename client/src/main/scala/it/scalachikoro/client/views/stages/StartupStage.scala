@@ -1,6 +1,6 @@
 package it.scalachikoro.client.views.stages
 
-import it.scalachikoro.client.controllers.MainViewActorListener
+import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import it.scalachikoro.client.views.stages.scenes.{BaseScene, QueueScene, StartupScene}
 
 trait StartupStage extends BaseStage {

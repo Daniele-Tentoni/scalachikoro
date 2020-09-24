@@ -6,6 +6,7 @@ import it.scalachikoro.client.views.stages.GameStage
 import it.scalachikoro.koro.cards.Card
 import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.Player
+import it.scalachikoro.messages.GameMessages.RollDice
 import scalafx.application.{JFXApp, Platform}
 
 /**
@@ -70,6 +71,7 @@ trait GameEventListener {
 class GameController(system: ActorSystem, app: JFXApp) extends Controller with GameEventListener {
   private[this] val gameStage: GameStage = GameStage(this)
   private[this] var gameActor: Option[ActorRef] = None
+  var serverGameRef: Option[ActorRef] = None
 
   /**
    * @inheritdoc
@@ -81,6 +83,7 @@ class GameController(system: ActorSystem, app: JFXApp) extends Controller with G
 
   override def updateGameState(ref: ActorRef, state: GameState): Unit = {
     println("New game controller received.")
+    serverGameRef = Some(ref)
     gameActor = Some(system.actorOf(GameActor.props("game", this, ref)))
     gameStage.updateGameState(state)
   }
@@ -93,7 +96,9 @@ class GameController(system: ActorSystem, app: JFXApp) extends Controller with G
   /**
    * @inheritdoc
    */
-  override def roll(n: Int): Unit = ??? // TODO: Say to the server to roll dices.
+  override def roll(n: Int): Unit = withServerGameRef {
+    _ ! RollDice(n)
+  }
 
   /**
    * @inheritdoc
@@ -119,4 +124,16 @@ class GameController(system: ActorSystem, app: JFXApp) extends Controller with G
    * @inheritdoc
    */
   override def playerWon(player: Player): Unit = ???
+
+  /**
+   * Invoke a function only if have some actor reference.
+   *
+   * @param f Function to invoke.
+   */
+  private[this] def withServerGameRef(f: ActorRef => Unit): Unit = {
+    serverGameRef match {
+      case Some(ref) => f(ref)
+      case _ => println(f"No server actor.")
+    }
+  }
 }

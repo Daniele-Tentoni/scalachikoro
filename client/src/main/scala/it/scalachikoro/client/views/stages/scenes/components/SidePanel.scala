@@ -11,11 +11,14 @@ trait ActionPanel {
 
 trait SidePanel extends BorderPane with ActionPanel {
   def username(name: String)
+
   def addHistory(progress: String)
+
   def timer(time: Int)
 }
 
 object SidePanel {
+
   private[this] class SidePanelImpl(private[this] val listener: SideEventListener) extends SidePanel {
     padding = Insets(10d)
 
@@ -27,6 +30,14 @@ object SidePanel {
     val historyLabel: Label = Label("history")
     val stateContainer = new VBox()
     stateContainer.children.addAll(usernameLabel, messageLabel, timerLabel, historyLabel)
+    val diceLabel: Label = Label("Dice")
+    val roll1Btn: Button = new Button("Roll one dice") {
+      onAction = _ => listener roll 1 // TODO: Move this behaviour to another class.
+    }
+
+    val roll2Btn: Button = new Button("Roll two dices") {
+      onAction = _ => listener roll 2
+    }
     val passBtn: Button = new Button("Pass") {
       onAction = _ => listener pass()
     }
@@ -53,12 +64,14 @@ object SidePanel {
 
     // TODO: We can move those in another panel.
     private[this] var history = ""
+
     override def addHistory(progress: String): Unit = {
       history = f"$history\n$progress"
       historyLabel.text = history
     }
 
     private[this] var timer = 0
+
     override def timer(time: Int): Unit = {
       timer = time // TODO: When time reach 0, notify an event.
     }
