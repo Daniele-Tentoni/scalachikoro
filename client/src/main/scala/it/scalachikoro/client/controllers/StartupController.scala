@@ -76,6 +76,12 @@ trait MainViewActorListener {
   def gameStarted()
 }
 
+/**
+ * The Controller where all lobby business logic is managed.
+ *
+ * @param system The Singleton Actor System.
+ * @param app    The Singleton JFXApp.
+ */
 class StartupController(system: ActorSystem, app: JFXApp) extends Controller with MainViewActorListener {
   private[this] val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
@@ -165,9 +171,8 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    * @inheritdoc
    */
   override def matchFound(name: String, gameRef: ActorRef): Unit = Platform runLater {
-    val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
-
     // React to user's selection.
+    val alert = KoroAlert.confirmation("Wanna join", "You really wanna join") showAndWait()
     inviteAccepted(name, alert contains ButtonType.OK, gameRef)
   }
 

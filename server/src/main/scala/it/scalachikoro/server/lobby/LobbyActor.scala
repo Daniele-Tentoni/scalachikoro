@@ -5,12 +5,15 @@ import it.scalachikoro.actors.MyActor
 import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.LobbyMessages._
 import it.scalachikoro.server.MyIdGenerator
-import it.scalachikoro.server.game.{GameActor, IAGameActor}
+import it.scalachikoro.server.game.GameActor
 
+/**
+ * The Actor where all play requests from Clients are received.
+ */
 object LobbyActor {
   def props(): Props = Props(new LobbyActor())
 
-  def player(name: String, ref: ActorRef): PlayerRef = new PlayerRef(ref, MyIdGenerator generateUniqueId(), name)
+  def player(name: String, ref: ActorRef): PlayerRef = PlayerRef(ref, MyIdGenerator generateUniqueId(), name)
 }
 
 class LobbyActor extends MyActor {

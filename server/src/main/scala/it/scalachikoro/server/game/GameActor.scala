@@ -2,7 +2,7 @@ package it.scalachikoro.server.game
 
 import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.koro.game.{Game, Turn}
+import it.scalachikoro.koro.game.{Game, GameState, Turn}
 import it.scalachikoro.koro.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
 import it.scalachikoro.messages.LobbyMessages.Start
@@ -10,6 +10,9 @@ import it.scalachikoro.messages.LobbyMessages.Start
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
+/**
+ * The Actor where all game logic is managed before send messages to clients.
+ */
 object GameActor {
   def props(playersNumber: Int): Props = Props(new GameActor(playersNumber))
 }
@@ -55,7 +58,13 @@ class GameActor(playersNumber: Int) extends MyActor {
   private[this] def initializeGame(players: Seq[PlayerKoro]): Unit = {
     game = Game(players)
     this log f"Initialized game $game."
-    broadcastMessage(turn.all.map(_.actorRef), GameState(game))
+
+    // Notify to all players their Game States.
+    turn.all
+      .map(p => (p, players
+        .find(k => k.id == p.id)
+        .getOrElse(PlayerKoro.bank))
+      ).foreach(p => p._1.actorRef ! UpdateState(self, GameState(game, p._2)))
     this log f"Sent state to all players."
     turn.get.actorRef ! PlayerTurn
     this log f"Sent player turn to correct player."

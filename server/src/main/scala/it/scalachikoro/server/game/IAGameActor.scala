@@ -2,21 +2,25 @@ package it.scalachikoro.server.game
 
 import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.koro.game.Game
+import it.scalachikoro.koro.game.{Game, GameState}
 import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.GameMessages._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
+/**
+ * A fake actor used to test all player features.
+ */
 object IAGameActor {
   def props(server: ActorRef): Props = Props(new IAGameActor(server))
 }
 
 class IAGameActor(server: ActorRef) extends MyActor {
   def receive: Receive = {
-    case GameState(state) =>
-      context become (gameStarted(GameState(state)) orElse terminated)
+    case UpdateState(ref, state) =>
+      this log f"Received a new state $state from $ref"
+      context become (gameStarted(state) orElse terminated)
   }
 
   def gameStarted(game: GameState): Receive = {

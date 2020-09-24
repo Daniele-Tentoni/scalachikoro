@@ -5,6 +5,9 @@ import it.scalachikoro.koro.players.PlayerKoro
 
 trait GameState
 
+/**
+ * Provide a container for all information needed to be sent to Players.
+ */
 object GameState {
 
   case class LocalGameState(player: PlayerKoro, others: Seq[PlayerKoro], cards: Seq[Card]) extends GameState

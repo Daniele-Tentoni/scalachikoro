@@ -9,6 +9,9 @@ import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
+/**
+ * The Actor where all communications with server are managed.
+ */
 object MainViewActor {
   def props(name: String, listener: MainViewActorListener): Props = Props(new MainViewActor(name, listener))
 }

@@ -1,8 +1,10 @@
 package it.scalachikoro.client.controllers
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
+import it.scalachikoro.client.actors.GameActor
 import it.scalachikoro.client.views.stages.GameStage
 import it.scalachikoro.koro.cards.Card
+import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.Player
 import scalafx.application.{JFXApp, Platform}
 
@@ -11,55 +13,76 @@ import scalafx.application.{JFXApp, Platform}
  */
 trait GameEventListener {
   /**
+   * Update all views with a new game state received from the server.
+   */
+  def updateGameState(ref: ActorRef, state: GameState)
+
+  /**
    * The player wanna roll dices.
+   *
    * @param n Number of dices.
    */
   def roll(n: Int)
 
   /**
    * The server have rolled the dices.
+   *
    * @param n Number rolled.
    */
   def rolled(n: Int)
 
   /**
    * The player received moneys from server.
+   *
    * @param n Money received.
    */
   def receive(n: Int)
 
   /**
    * The player wanna acquire a card.
+   *
    * @param card Card wanna acquire.
    */
   def acquire(card: Card)
 
   /**
    * A player have acquired a card.
+   *
    * @param player Player that have done the operation.
-   * @param card Card acquired.
+   * @param card   Card acquired.
    */
   def acquired(player: Player, card: Card)
 
   /**
    * A player has won!
+   *
    * @param player Player that has won.
    */
   def playerWon(player: Player)
 }
 
+/**
+ * Controller for all game business logic and game views.
+ *
+ * @param system The Singleton Actor System.
+ * @param app    The Singleton JFXApp.
+ */
 class GameController(system: ActorSystem, app: JFXApp) extends Controller with GameEventListener {
-  private[this] var gameStage: GameStage = _
+  private[this] val gameStage: GameStage = GameStage(this)
+  private[this] var gameActor: Option[ActorRef] = None
 
   /**
    * @inheritdoc
    */
   override def start(): Unit =
     Platform.runLater({
-      gameStage = GameStage(this)
-      // gameStage.initMatch()
       app.stage = gameStage
     })
+
+  override def updateGameState(ref: ActorRef, state: GameState): Unit = {
+    println("New game controller received.")
+    gameActor = Some(system.actorOf(GameActor.props("game", this, ref)))
+  }
 
   /**
    * @inheritdoc

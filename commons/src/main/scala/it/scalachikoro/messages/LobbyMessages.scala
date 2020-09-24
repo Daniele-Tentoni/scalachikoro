@@ -2,20 +2,22 @@ package it.scalachikoro.messages
 
 import akka.actor.ActorRef
 import it.scalachikoro.koro.cards.Card
-import it.scalachikoro.koro.game.Game
+import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.PlayerRef
 
 object LobbyMessages {
 
   /**
    * Message from client to server to connect him.
+   *
    * @param name Name of client player.
-   * @param ref Client Actor Reference.
+   * @param ref  Client Actor Reference.
    */
   case class Connect(name: String, ref: ActorRef)
 
   /**
    * Message from Server to Client to confirm connection.
+   *
    * @param name Name of Server.
    */
   case class Hi(name: String)
@@ -38,6 +40,7 @@ object LobbyMessages {
 
   /**
    * Message Client -> Server to leave the queue.
+   *
    * @param id Id of Client Actor.
    */
   case class Leave(id: String)
@@ -49,6 +52,7 @@ object LobbyMessages {
 
   /**
    * Message Lobby -> Game to start a new Game.
+   *
    * @param players Sequence of PlayerRef selected.
    */
   case class Start(players: Seq[PlayerRef])
@@ -64,12 +68,14 @@ object GameMessages {
 
   /**
    * Message Client -> Server that accept the Invite
+   *
    * @param name Name of Acceptor.
    */
   case class Accept(name: String)
 
   /**
    * Message Client -> Server that decline the Invite.
+   *
    * @param name Name of Decliner.
    */
   case class Decline(name: String)
@@ -81,26 +87,38 @@ object GameMessages {
 
   /**
    * Message Client -> Game to confirm the participation. TODO: Change this description.
+   *
    * @param name Name of local Player.
    */
   case class Ready(name: String)
 
   /**
    * Message Game -> Client to notify the current Game.
+   *
+   * @param ref   Remote Game ActorRef.
    * @param state Current Game.
    */
-  case class GameState(state: Game)
+  case class UpdateState(ref: ActorRef, state: GameState)
 
+  /**
+   * Message Game -> Client to notify the start of Turn.
+   */
   case class PlayerTurn()
 
+  /**
+   * Message Game -> Client to notify the start of another Player Turn.
+   *
+   * @param player Other player.
+   */
   case class OpponentTurn(player: PlayerRef)
 
   case class RollDice(n: Int)
 
   /**
    * A Player have rolled dices.
+   *
    * @param result Result of roll.
-   * @param ref Player Reference.
+   * @param ref    Player Reference.
    */
   case class DiceRolled(result: Int, ref: PlayerRef)
 
