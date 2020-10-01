@@ -8,20 +8,21 @@ import scalafx.scene.layout.VBox
 
 // TODO: Create the companion object.
 case class StartupScene(listener: MainViewActorListener) extends BaseScene {
+  private[this] val maxLabelWidth = 300
   // TODO: Add a background.
   val serverLabel: Label = Label("Server")
   serverLabel.maxWidth = 300
   val serverField: TextField = new TextField {
     text = "0.0.0.0"
     textFormatter = IpTextFormatter()
-    maxWidth = 300
+    maxWidth = maxLabelWidth
   }
 
   val portLabel: Label = Label("Port")
-  portLabel.maxWidth = 300
+  portLabel.maxWidth = maxLabelWidth
   val portField: TextField = new TextField {
     text = "47000"
-    maxWidth = 300
+    maxWidth = maxLabelWidth
   }
 
   val usernameLabel: Label = Label("Username")
@@ -34,8 +35,7 @@ case class StartupScene(listener: MainViewActorListener) extends BaseScene {
 
   val center: VBox = new VBox() {
     alignment = Pos.Center
-    spacing = 10
-    // setMaxWidth(400)
+    spacing = 10d
   }
   center.getChildren.addAll(serverLabel, serverField, portLabel, portField, usernameLabel, usernameField, btnHi)
 
@@ -54,7 +54,6 @@ case class StartupScene(listener: MainViewActorListener) extends BaseScene {
     } else {
       bottomBar message "Username not present."
       bottomBar loading false
-      // KoroAlert error("Input error", "Some input error") showAndWait()
     }
   }
 }

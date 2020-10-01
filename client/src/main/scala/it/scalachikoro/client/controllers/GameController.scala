@@ -76,13 +76,13 @@ class GameController(system: ActorSystem, app: JFXApp) extends Controller with G
   /**
    * @inheritdoc
    */
-  override def start(): Unit =
-    Platform.runLater({
-      app.stage = gameStage
-    })
+  override def start(): Unit = {
+    Platform.runLater({ app.stage = gameStage })
+    println("GameController started.")
+  }
 
   override def updateGameState(ref: ActorRef, state: GameState): Unit = {
-    println("New game controller received.")
+    println("New game state received.")
     serverGameRef = Some(ref)
     gameActor = Some(system.actorOf(GameActor.props("game", this, ref)))
     gameStage.updateGameState(state)

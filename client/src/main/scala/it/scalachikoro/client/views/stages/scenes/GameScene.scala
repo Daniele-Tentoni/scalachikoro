@@ -43,7 +43,6 @@ object GameScene {
       case GameState.LocalGameState(player, others, cards) =>
         rightBar.username(player.name)
         rightBar.addHistory("Update game state")
-
       case _ =>
     }
 

@@ -7,20 +7,19 @@ trait StartupStage extends BaseStage {
   def goToQueueScene(name: String)
 
   /**
-   * Event for queued player.
+   * Event for queued Player.
    *
    * @param n Number of other queued players.
    */
   def queued(n: Int)
 
+  /** Event for enqueued Player. */
   def enqueued()
 
   def goToMainScene()
 }
 
 object StartupStage {
-
-  // TODO: Document this.
   private case class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
     private[this] val mainScene: BaseScene = StartupScene(listener)
     private[this] var currentScene: BaseScene = mainScene // TODO: Change to a Scene Stack?
@@ -31,7 +30,7 @@ object StartupStage {
     override def goToQueueScene(name: String): Unit = currentScene match {
       case QueueScene(_, _) => println("Wrong scenes on.")
       case _ =>
-        val queueScene = QueueScene(name, listener) // TODO: Why arrive the server name?
+        val queueScene = QueueScene(name, listener) // TODO: Why server name arrive?
         scene = queueScene
         currentScene = queueScene
     }

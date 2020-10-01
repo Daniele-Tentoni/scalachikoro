@@ -25,6 +25,18 @@ object Icon {
 
   case class Major() extends Icon
 
+  implicit def string2icon(s: String): Icon = s match {
+    case "Wheat" => Wheat()
+    case "Cow" => Cow()
+    case "Gear" => Gear()
+    case "Bread" => Bread()
+    case "Factory" => Factory()
+    case "Fruit" => Fruit()
+    case "Cup" => Cup()
+    case "Major" => Major()
+    case _ => throw new RuntimeException()
+  }
+
 }
 
 sealed class CardType()

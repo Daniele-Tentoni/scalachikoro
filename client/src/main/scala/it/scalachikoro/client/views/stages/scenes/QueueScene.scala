@@ -18,7 +18,7 @@ case class QueueScene(name: String, listener: MainViewActorListener) extends Bas
   val center: VBox = new VBox() {
     alignment = Pos.Center
     maxWidth = 400
-    spacing = 10
+    spacing = 10d
   }
 
   center.getChildren.addAll(usernameLabel, btnQueue, btnLeave)

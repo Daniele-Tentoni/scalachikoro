@@ -20,7 +20,8 @@ trait SidePanel extends BorderPane with ActionPanel {
 object SidePanel {
 
   private[this] class SidePanelImpl(private[this] val listener: SideEventListener) extends SidePanel {
-    padding = Insets(10d)
+    private[this] val defaultSpacing = 5d
+    padding = Insets(defaultSpacing * 2)
 
     // TODO: Add a panel for timer
 
@@ -28,16 +29,24 @@ object SidePanel {
     val messageLabel: Label = Label("message")
     val timerLabel: Label = Label("timer")
     val historyLabel: Label = Label("history")
-    val stateContainer = new VBox()
-    stateContainer.children.addAll(usernameLabel, messageLabel, timerLabel, historyLabel)
+    val stateContainer: VBox = new VBox(){
+      spacing = defaultSpacing
+    }
+    stateContainer.children addAll(usernameLabel, messageLabel, timerLabel, historyLabel)
+
+    // From those btns users can roll for one or two dices.
     val diceLabel: Label = Label("Dice")
     val roll1Btn: Button = new Button("Roll one dice") {
       onAction = _ => listener roll 1 // TODO: Move this behaviour to another class.
     }
-
     val roll2Btn: Button = new Button("Roll two dices") {
       onAction = _ => listener roll 2
     }
+    val diceContainer: VBox = new VBox() {
+      spacing = defaultSpacing
+    }
+    diceContainer.children addAll(diceLabel, roll1Btn, roll2Btn)
+
     val passBtn: Button = new Button("Pass") {
       onAction = _ => listener pass()
     }
@@ -45,19 +54,22 @@ object SidePanel {
       onAction = _ => listener drop()
     }
     val btnContainer: VBox = new VBox() {
-      spacing = 5d
+      spacing = defaultSpacing
     }
     btnContainer.children addAll(passBtn, dropBtn)
+
     val rightTop = new VBox()
     rightTop.children addAll stateContainer
     top = rightTop
+    val rightCenter = new VBox()
+    rightCenter.children addAll diceContainer
     val rightBottom = new VBox()
     rightBottom.children addAll btnContainer
     bottom = rightBottom
 
     override def enable(b: Boolean): Unit = {
-      passBtn.setDisable(b)
-      dropBtn.setDisable(b)
+      passBtn setDisable b
+      dropBtn setDisable b
     }
 
     override def username(name: String): Unit = usernameLabel.text = name

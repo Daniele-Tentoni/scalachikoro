@@ -27,20 +27,19 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   private[this] val startUpStage = StartupStage(this)
   var serverLobbyRef: Option[ActorRef] = None
   var player: PlayerRef = PlayerRef(noSender, "", "")
-  val gameController = new GameController(system, app)
 
   /**
    * @inheritdoc
    */
   override def start(): Unit = Platform.runLater {
     app.stage = startUpStage
+    println(f"Startup Controller started.")
   }
 
   /**
    * @inheritdoc
    */
   override def stop(): Unit = {
-    gameController.stop()
     println(f"Startup Controller stopped.")
   }
 
@@ -91,7 +90,6 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   override def queued(id: String, name: String, others: Int): Unit = Platform.runLater {
     player = player.copy(id = id)
     startUpStage queued others
-    // KoroAlert.info("Queued", "You are now in queue") showAndWait()
   }
 
   /**
@@ -130,8 +128,8 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
    * @inheritdoc
    */
   override def gameStarted(): Unit = {
+    val gameController = new GameController(system, app)
     gameController start()
-    println("GameController started.")
   }
 
   /**
