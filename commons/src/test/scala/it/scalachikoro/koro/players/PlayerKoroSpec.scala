@@ -41,4 +41,18 @@ class PlayerKoroSpec extends AnyWordSpec {
       }
     }
   }
+
+  "A Bank PlayerKoro" when {
+    "istanziated" should {
+      val b = PlayerKoro.bank
+      "Have default values" in {
+        assertResult("Bank")(b.id)
+        assertResult("Bank")(b.name)
+        assertResult(999)(b.money)
+      }
+      "Have no cards" in {
+        assert(b.cards.isEmpty)
+      }
+    }
+  }
 }
