@@ -52,7 +52,7 @@ object Game {
    * @return Result.
    */
   def roll(n: Int): Int = {
-    (0 to n).fold(0)((acc, _) => acc + Utils.getSecureRandom(6))
+    (0 to n).fold(0)((acc, _) => acc + Utils.secureRandom(6))
   }
 
   def apply(players: Seq[PlayerKoro]): Game = new Game(players, Deck.shuffled)

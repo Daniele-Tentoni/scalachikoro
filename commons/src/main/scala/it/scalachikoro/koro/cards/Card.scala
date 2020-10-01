@@ -98,6 +98,7 @@ case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: In
     case Restaurants(_) => Operation.Give(income, player)
     case PrimaryIndustry(_) => Operation.Receive(income, player)
     case SecondaryIndustry(_, sub) => Operation.Receive(income * player.cards.count(_.icon == sub), player)
+    case _ => Operation.NoOperation
   }
 }
 

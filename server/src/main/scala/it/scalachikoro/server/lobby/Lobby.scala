@@ -7,7 +7,7 @@ trait Lobby[T <: PlayerRef] {
 
   def isEmpty: Boolean = items.isEmpty
 
-  def getItems(n: Int): (Lobby[T], Option[Seq[T]])
+  def players(n: Int): (Lobby[T], Option[Seq[T]])
 
   def +(item: T): Lobby[T]
 
@@ -15,7 +15,7 @@ trait Lobby[T <: PlayerRef] {
 }
 
 case class PlayersLobby[T <: PlayerRef](override val items: Seq[T]) extends Lobby[T] {
-  override def getItems(n: Int): (Lobby[T], Option[Seq[T]]) = if (items.size >= n)
+  override def players(n: Int): (Lobby[T], Option[Seq[T]]) = if (items.size >= n)
     (copy(items = items drop n), Some(items take n))
   else
     (this, None)

@@ -12,7 +12,7 @@ class TurnSpec extends AnyWordSpec with Matchers {
         assertResult(ints)(turn.all)
       }
       "start at first int" in {
-        assertResult(ints.head)(turn.get)
+        assertResult(ints.head)(turn.actual)
       }
     }
     "already started" should {

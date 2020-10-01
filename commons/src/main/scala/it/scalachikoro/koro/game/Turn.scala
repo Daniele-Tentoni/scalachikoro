@@ -1,7 +1,7 @@
 package it.scalachikoro.koro.game
 
 trait Turn[T] {
-  def get: T
+  def actual: T
 
   def next: T
 
@@ -14,11 +14,11 @@ object Turn {
   private[this] class TurnImpl[T](items: Seq[T]) extends Turn[T] {
     private[this] var index = 0
 
-    override def get: T = items(index)
+    override def actual: T = items(index)
 
     override def next: T = {
       index = (index + 1) % items.size
-      get
+      actual
     }
 
     override def all: Seq[T] = items

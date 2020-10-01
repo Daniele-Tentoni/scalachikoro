@@ -66,11 +66,11 @@ class GameActor(playersNumber: Int) extends MyActor {
         .getOrElse(PlayerKoro.bank))
       ).foreach(p => p._1.actorRef ! UpdateState(self, GameState(game, p._2)))
     this log f"Sent state to all players."
-    turn.get.actorRef ! PlayerTurn
+    turn.actual.actorRef ! PlayerTurn
     this log f"Sent player turn to correct player."
-    broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
+    broadcastMessage(turn.all.filterNot(_ == turn.actual).map(_.actorRef), OpponentTurn(turn.actual))
     this log f"Sent opponent turn to correct players."
-    context.become(rollTime(game, turn.get) orElse terminated)
+    context.become(rollTime(game, turn.actual) orElse terminated)
     this log f"Changed behaviour."
   }
 
@@ -95,7 +95,7 @@ class GameActor(playersNumber: Int) extends MyActor {
         case _ =>
       }
       // TODO: Return the new game state.
-      context.become(acquireTime(actual, turn.get) orElse terminated)
+      context.become(acquireTime(actual, turn.actual) orElse terminated)
   }
 
   private [this] def acquireTime(actual: Game, ref: PlayerRef): Receive = {
@@ -116,8 +116,8 @@ class GameActor(playersNumber: Int) extends MyActor {
 
   private[this] def nextTurn(actual: Game): Unit = {
     turn.next.actorRef ! PlayerTurn
-    broadcastMessage(turn.all filterNot(_ == turn.get) map(_.actorRef), OpponentTurn(turn.get))
-    context become(rollTime(actual, turn.get) orElse terminated)
+    broadcastMessage(turn.all filterNot(_ == turn.actual) map(_.actorRef), OpponentTurn(turn.actual))
+    context become(rollTime(actual, turn.actual) orElse terminated)
   }
 
   private[this] def terminated: Receive = {

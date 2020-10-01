@@ -37,8 +37,8 @@ class IAGameActor(server: ActorRef) extends MyActor {
     case DiceRolled(result, ref) =>
       this log f"Dice rolled message with $result by $ref"
 
-    case Receive(n) =>
-      this log f"Received $n moneys."
+    case Receive(n, from) =>
+      this log f"Received $n moneys from $from."
 
     case Give(n, from) =>
       this log f"Must give $n moneys to $from"

@@ -45,7 +45,7 @@ class LobbyActor extends MyActor {
 
   private[this] def checkAndCreateGame(): Unit = {
     this log f"Fetch for at least 2 players."
-    val p = lobby.getItems(2)
+    val p = lobby.players(2)
     p._2 match {
       case Some(value) =>
         this log f"Found ${p._2} to start a match."

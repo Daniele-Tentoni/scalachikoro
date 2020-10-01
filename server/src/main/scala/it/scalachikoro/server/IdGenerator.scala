@@ -4,7 +4,6 @@ import java.util.UUID
 
 import scala.annotation.tailrec
 
-
 trait IdGenerator {
   def generateId(): String
 }

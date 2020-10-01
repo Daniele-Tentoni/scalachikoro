@@ -23,5 +23,5 @@ object Operation{
   /**
    * No Operation needed.
    */
-  case class NoOperation() extends Operation
+  case object NoOperation extends Operation
 }
