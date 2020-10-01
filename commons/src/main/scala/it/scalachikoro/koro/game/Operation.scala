@@ -2,6 +2,9 @@ package it.scalachikoro.koro.game
 
 import it.scalachikoro.koro.players.PlayerKoro
 
+/**
+ * A financial operation inside the game.
+ */
 sealed class Operation
 
 object Operation{
