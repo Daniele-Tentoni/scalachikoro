@@ -86,7 +86,7 @@ object GameMessages {
   case class Drop()
 
   /**
-   * Message Client -> Game to confirm the participation. TODO: Change this description.
+   * (Client -> Game) Say that is ready to start to play.
    *
    * @param name Name of local Player.
    */
@@ -122,13 +122,15 @@ object GameMessages {
    */
   case class DiceRolled(result: Int, ref: PlayerRef)
 
-  case class Receive(n: Int)
+  case class Receive(n: Int, from: String)
 
-  case class Give(n: Int, from: PlayerRef)
+  case class Give(n: Int, to: String)
 
   case class Acquire(card: Card)
 
   case class Acquired(card: Card, player: PlayerRef)
+
+  case class NotAcquired(message: String)
 
   case class EndTurn()
 

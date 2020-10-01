@@ -64,7 +64,7 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
           f"""***********************************************
              |Failed to locate Server actor.
              |Reason: $t""".stripMargin)
-        system.terminate() // TODO: Why the system is terminating?
+        system.terminate() // TODO: Why the system is terminating? Search again!
     }
   }
 

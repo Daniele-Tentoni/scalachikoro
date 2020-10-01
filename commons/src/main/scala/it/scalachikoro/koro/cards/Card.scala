@@ -31,17 +31,43 @@ sealed class CardType()
 
 object CardType {
 
+  /**
+   * A Landmark Card Type.
+   * His color is yellow.
+   */
   case class Landmark() extends CardType()
 
-  // TODO: This have fixed income.
+  /**
+   * A Primary Industry Card Type.
+   * His color is blue.
+   *
+   * @param activation Sequence of numbers that trigger the card.
+   */
   case class PrimaryIndustry(activation: Seq[Int]) extends CardType() with MayTrigger
 
-  // TODO: This produce for each instance of Primary
+  /**
+   * A Secondary Industry Card Type.
+   * His color is green.
+   *
+   * @param activation Sequence of numbers that trigger the card.
+   * @param subType    Icon that stack with this.
+   */
   case class SecondaryIndustry(activation: Seq[Int], subType: Icon) extends CardType() with MayTrigger
 
-  // TODO: This take income from other Players.
+  /**
+   * A Restaurant Card Type.
+   * His color is red.
+   *
+   * @param activation Sequence of numbers that trigger the card.
+   */
   case class Restaurants(activation: Seq[Int]) extends CardType() with MayTrigger
 
+  /**
+   * A Major Card Type.
+   * His color is violet.
+   *
+   * @param activation Sequence of numbers that trigger the card.
+   */
   case class Major(activation: Seq[Int]) extends CardType() with MayTrigger
 
 }

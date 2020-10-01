@@ -31,6 +31,7 @@ case class PlayerKoro(override val id: String, name: String, money: Int, cards: 
     if (c.trigger(n, turn = true)) c.income(this)
     else Operation.NoOperation())
 
+  // TODO: Why I can't decrease here Player's moneys?
   def calculateTaxes(n: Int, other: PlayerKoro): Seq[Operation] = other.cards.foldLeft((Seq.empty[Operation], money)){
     (acc, card) => if(card.trigger(n, turn = false)) {
       val tax = if(acc._2 > card.income) card.income else acc._2

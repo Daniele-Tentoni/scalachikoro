@@ -27,11 +27,11 @@ class GameActor(name: String, listener: GameEventListener, ref: ActorRef) extend
       this log f"Received a result of a dice roll"
       // TODO: Tell to player who have rolled dices.
       listener.rolled(result)
-    case Receive(n) =>
-      this log f"Received $n moneys"
+    case Receive(n, from) =>
+      this log f"Received $n moneys from $from"
       listener.receive(n)
     case Give(n, from) =>
-      this log f"Need to give $n moneys to ${from.name}"
+      this log f"Need to give $n moneys to ${from}"
     // TODO: Notify the player to give moneys to another player.
     case Acquired(card, player) =>
       this log f"${player.name} have acquired $card"

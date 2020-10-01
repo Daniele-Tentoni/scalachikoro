@@ -2,7 +2,7 @@ package it.scalachikoro.server.game
 
 import akka.actor.{ActorRef, PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.koro.game.{Game, GameState, Turn}
+import it.scalachikoro.koro.game.{Game, GameState, Operation, Turn}
 import it.scalachikoro.koro.players.{PlayerKoro, PlayerRef}
 import it.scalachikoro.messages.GameMessages._
 import it.scalachikoro.messages.LobbyMessages.Start
@@ -70,43 +70,67 @@ class GameActor(playersNumber: Int) extends MyActor {
     this log f"Sent player turn to correct player."
     broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
     this log f"Sent opponent turn to correct players."
-    context.become(inTurn(game, turn.get) orElse terminated)
+    context.become(rollTime(game, turn.get) orElse terminated)
     this log f"Changed behaviour."
   }
 
-  private[this] def inTurn(game: Game, ref: PlayerRef): Receive = {
+  private[this] def rollTime(actual: Game, ref: PlayerRef): Receive = {
     case RollDice(n) if ref.actorRef == sender =>
+      // First roll many dice as user want.
       val result = Game.roll(n)
       broadcastMessage(turn.all.map(_.actorRef), DiceRolled(result, ref))
-      // TODO: Give and Receive moneys.
-      val players = game.applyDiceResult(result, ref.id)
-    // context.become(inTurn(game.copy(players = players), turn.get) orElse terminated)
-    case Acquire(card) if ref.actorRef == sender =>
-      val newState = game.acquireCard(card, ref.id)
-      // TODO: Check if player have acquired the card.
-      broadcastMessage(turn.all.map(_.actorRef), Acquired(card, ref))
-      // TODO: Go through only if player have acquired the card.
-      nextTurn()
-    case EndTurn() if ref.actorRef == sender => nextTurn()
-    case a: Any => this log f"Received unknown message while in inTurn $a"
+      // Then apply the dice result to actual game state.
+      val players = actual.applyDiceResult(result, ref.id)
+      players.foreach {
+        case Operation.Give(amount, to) =>
+          // Give to other players their taxes.
+          val player = turn.all.find(p => p.id equals to.id)
+          withRef(player) { playerRef =>
+            ref.actorRef ! Give(amount, to.id)
+            playerRef.actorRef ! Receive(amount, ref.id)
+          }
+        case Operation.Receive(amount, from) =>
+          // Receive incomes from the bank.
+          ref.actorRef ! Receive(amount, from.id)
+        case _ =>
+      }
+      // TODO: Return the new game state.
+      context.become(acquireTime(actual, turn.get) orElse terminated)
   }
 
-  private[this] def nextTurn(): Unit = {
+  private [this] def acquireTime(actual: Game, ref: PlayerRef): Receive = {
+    case Acquire(card) if ref.actorRef == sender =>
+      val newState = actual acquireCard(card, ref.id)
+      newState match {
+        case Left(value) =>
+          this log f"${ref.name} haven't acquired the card."
+          ref.actorRef ! NotAcquired(value)
+        case Right(value) =>
+          this log f"${ref.name} have acquired the card."
+          broadcastMessage(turn.all.map(_.actorRef), Acquired(card, ref))
+          nextTurn(value)
+      }
+    case EndTurn() if ref.actorRef == sender => nextTurn(actual)
+    case a: Any => this log f"Received unknown message while in rollTime $a"
+  }
+
+  private[this] def nextTurn(actual: Game): Unit = {
     turn.next.actorRef ! PlayerTurn
-    broadcastMessage(turn.all.filterNot(_ == turn.get).map(_.actorRef), OpponentTurn(turn.get))
+    broadcastMessage(turn.all filterNot(_ == turn.get) map(_.actorRef), OpponentTurn(turn.get))
+    context become(rollTime(actual, turn.get) orElse terminated)
   }
 
   private[this] def terminated: Receive = {
     case Terminated(ref) =>
-      turn.all.find(_.actorRef == ref) match {
+      turn.all find(_.actorRef == ref) match {
         case Some(player) =>
-          System.err.println(f"Player ${player.name} terminated.")
-          broadcastMessage(turn.all.filterNot(_.actorRef == ref).map(_.actorRef), Drop()) // TODO: Change message.
+          System.err println(f"Player ${player.name} terminated.")
+          broadcastMessage(turn.all filterNot(_.actorRef == ref) map(_.actorRef), Drop()) // TODO: Change message.
           context.system.scheduler.scheduleOnce(20.second) {
-            System.err.println(f"Terminating game actor...")
+            System.err println(f"Terminating game actor...")
             self ! PoisonPill
           }
-        case _ => System.err.println(f"Client with ${ref.path} not found.");
+        case _ => System.err println(f"Client with ${ref.path} not found.");
       }
     case a: Any => this log f"Received unknown message while in terminated $a"
   }
@@ -115,5 +139,5 @@ class GameActor(playersNumber: Int) extends MyActor {
     case _ => sender ! Drop() // TODO: Change this message.
   }
 
-  private[this] def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs.foreach(_ ! message)
+  private[this] def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs foreach(_ ! message)
 }
