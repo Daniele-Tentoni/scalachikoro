@@ -40,7 +40,7 @@ class LobbyActor extends MyActor {
         ref.actorRef ! LeftQueue()
       }
 
-    case _ => log(f"${sender.path} send me an unknown message.")
+    case _ => this log f"${sender.path} send me an unknown message."
   }
 
   private[this] def checkAndCreateGame(): Unit = {
@@ -48,7 +48,7 @@ class LobbyActor extends MyActor {
     val p = lobby.players(2)
     p._2 match {
       case Some(value) =>
-        this log f"Found ${p._2} to start a match."
+        this log f"Found ${p._2.getOrElse(Nil).map(_.name)} to start a match."
         generateGameActor(value)
       case _ =>
         this log f"No players found to start a match."

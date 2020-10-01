@@ -26,7 +26,7 @@ class GameActor(playersNumber: Int) extends MyActor {
   private[this] def idle: Receive = {
     case Start(players) =>
       require(players.size == playersNumber)
-      println(f"Start a match with ${players.map(_.name)}. Waiting for their acceptance.")
+      this log f"Start a match with ${players.map(_.name)}. Waiting for their acceptance."
       turn = Turn(players)
       broadcastMessage(players.map(_.actorRef), GameInvitation())
       context.become(initializing(Seq.empty) orElse terminated)
@@ -35,23 +35,23 @@ class GameActor(playersNumber: Int) extends MyActor {
 
   private[this] def initializing(readyPlayers: Seq[PlayerKoro]): Receive = {
     case Accept(name) =>
-      println(f"Player $name is ready")
+      this log f"Player $name is ready"
       val player = turn.all.find(_.name == name)
       if (player.isEmpty) {
-        println(f"Player ${sender.path} with name $name didn't found.")
+        this log f"Player ${sender.path} with name $name didn't found."
         terminated
       } else {
         val updated = readyPlayers :+ PlayerKoro.init(player.get.id, player.get.name)
         if (updated.length == playersNumber) {
-          println("Start game")
+          this log "Start game"
           initializeGame(updated)
         } else {
-          println(f"Initialized by ${updated.size}, waiting for ${playersNumber - updated.size}")
-          context.become(initializing(updated) orElse terminated)
+          this log f"Initialized by ${updated.size}, waiting for ${playersNumber - updated.size}"
+          context become(initializing(updated) orElse terminated)
         }
       }
     case Drop() =>
-      context.become(terminated)
+      context become terminated
     case a: Any => this log f"Received unknown message while in initializing $a"
   }
 
