@@ -121,13 +121,42 @@ jobs:
       jdk:
         - openjdk11
     # Send test statistics to other services.
-    - stage: Test coverage reports
+    - stage: Deploys
       scala:
         - 2.12.12
       jdk: openjdk11
       os: linux
       dist: xenial
       script:
-        - sbt coverage test coverageReport coverageAggregate
-        - bash <(curl -s https://codecov.io/bash)
+        - sbt coverage test coverageReport coverageAggregate doc
         # - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./target/scala-2.12/coverage-report/coberatura.xml
+      deploy:
+        provider: pages
+        strategy: git
+        skip_cleanup: true
+        token: $GH_TOKEN
+        keep_history: true
+        local_dir: public
+        on:
+          all_branches: true
+        after_success:
+          - bash <(curl -s https://codecov.io/bash)
+    - stage: Deploys
+      script:
+        # Set up git user name and tag this commit.
+        - git config --local user.name "Daniele Tentoni"
+        - git config --local user.email "daniele.tentoni.1996@gmail.com"
+        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+        - git tag $TRAVIS_TAG
+        - sbt clean packArchive
+      deploy:
+        provider: releases
+        skip_cleanup: true
+        token: $GH_TOKEN
+        file_glob: true
+        file:
+          - /**/*.tar.gz
+          - /**/*.zip
+        on:
+          branch: master
+          tags: true
