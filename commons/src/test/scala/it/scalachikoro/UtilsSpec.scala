@@ -1,6 +1,5 @@
-package it.scalachikoro.koro
+package it.scalachikoro
 
-import it.scalachikoro.Utils
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import org.scalatest.matchers.should

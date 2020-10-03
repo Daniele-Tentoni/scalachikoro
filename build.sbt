@@ -49,7 +49,7 @@ lazy val scalaFXDep = javaFXModules.map(m =>
  */
 coverageMinimum := 25
 coverageFailOnMinimum := true
-coverageExcludedFiles := "*it.scalachikoro.constants.*"
+coverageExcludedPackages := "*it.scalachikoro.constants.*;"
 
 /*
  * Project configurations.
