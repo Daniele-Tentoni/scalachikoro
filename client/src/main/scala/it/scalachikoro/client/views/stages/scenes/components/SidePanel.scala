@@ -1,11 +1,11 @@
 package it.scalachikoro.client.views.stages.scenes.components
 
-import it.scalachikoro.client.views.stages.scenes.SideEventListener
+import it.scalachikoro.client.views.stages.scenes.SidePanelListener
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.{BorderPane, VBox}
 
-trait SidePanel extends BorderPane with ActionPanel {
+trait SidePanel extends BorderPane with ActionPanel with SideEventListener {
   def username(name: String)
 
   def addHistory(progress: String)
@@ -13,9 +13,11 @@ trait SidePanel extends BorderPane with ActionPanel {
   def timer(time: Int)
 }
 
+trait SideEventListener extends DiceEventListener
+
 object SidePanel {
 
-  private[this] class SidePanelImpl(private[this] val listener: SideEventListener) extends SidePanel {
+  private[this] class SidePanelImpl(private[this] val listener: SidePanelListener) extends SidePanel {
     padding = Insets(defaultSpacing * 2)
 
     // TODO: Add a panel for timer
@@ -43,8 +45,8 @@ object SidePanel {
     val rightTop = new VBox()
     rightTop.children addAll stateContainer
     top = rightTop
-    val rightCenter: DicePanel = DicePanel(listener)
-    center = rightCenter
+    val dicePanel: DicePanel = DicePanel(listener)
+    center = dicePanel
     val rightBottom = new VBox()
     rightBottom.children addAll btnContainer
     bottom = rightBottom
@@ -69,7 +71,14 @@ object SidePanel {
     override def timer(time: Int): Unit = {
       timer = time // TODO: When time reach 0, notify an event.
     }
+
+    /**
+     * Pass to another listener.
+     *
+     * @param n Dice result.
+     */
+    override def diceRolled(n: Int): Unit = dicePanel.diceRolled(n)
   }
 
-  def apply(listener: SideEventListener): SidePanel = new SidePanelImpl(listener)
+  def apply(listener: SidePanelListener): SidePanel = new SidePanelImpl(listener)
 }

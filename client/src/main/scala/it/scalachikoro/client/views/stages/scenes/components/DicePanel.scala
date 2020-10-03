@@ -3,8 +3,7 @@ package it.scalachikoro.client.views.stages.scenes.components
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.{BorderPane, VBox}
 
-trait DicePanel extends BorderPane with ActionPanel {
-
+trait DicePanel extends BorderPane with ActionPanel with DiceEventListener {
   /**
    * Enable the second button.
    */
@@ -12,7 +11,21 @@ trait DicePanel extends BorderPane with ActionPanel {
 }
 
 trait DicePanelListener {
+  /**
+   * The player wanna roll dices.
+   *
+   * @param n Number of dices.
+   */
   def roll(n: Int)
+}
+
+trait DiceEventListener {
+  /**
+   * Notify the view of a dice roll.
+   *
+   * @param n Dice result.
+   */
+  def diceRolled(n: Int)
 }
 
 object DicePanel {
@@ -44,6 +57,8 @@ object DicePanel {
       roll1Btn setDisable b
       roll2Btn setDisable b
     }
+
+    override def diceRolled(n: Int): Unit = diceLabel setText n.toString
   }
 
   def apply(listener: DicePanelListener): DicePanel = new DicePanelImpl(listener)

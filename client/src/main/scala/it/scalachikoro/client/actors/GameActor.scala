@@ -2,14 +2,14 @@ package it.scalachikoro.client.actors
 
 import akka.actor.{ActorRef, Props}
 import it.scalachikoro.actors.MyActor
-import it.scalachikoro.client.controllers.GameEventListener
+import it.scalachikoro.client.controllers.{GameEventListener, GamePanelListener}
 import it.scalachikoro.messages.GameMessages._
 
 /**
  * The Actor where all game logic are received from the remote Game Actor.
  */
 object GameActor {
-  def props(name: String, listener: GameEventListener, ref: ActorRef): Props = Props(new GameActor(name, listener, ref))
+  def props(name: String, listener: GameEventListener with GamePanelListener, ref: ActorRef): Props = Props(new GameActor(name, listener, ref))
 }
 
 class GameActor(name: String, listener: GameEventListener, ref: ActorRef) extends MyActor {
@@ -20,13 +20,12 @@ class GameActor(name: String, listener: GameEventListener, ref: ActorRef) extend
     case PlayerTurn() =>
       this log f"Received player turn"
       // TODO: Tell to player how many dices wanna roll.
-      listener.roll(1)
     case OpponentTurn(player) =>
       this log f"Received another player turn"
     case DiceRolled(result, ref) =>
       this log f"Received a result of a dice roll"
       // TODO: Tell to player who have rolled dices.
-      listener.rolled(result)
+      listener diceRolled result
     case Receive(n, from) =>
       this log f"Received $n moneys from $from"
       listener.receive(n)

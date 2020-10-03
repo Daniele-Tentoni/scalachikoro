@@ -3,6 +3,8 @@ package it.scalachikoro.client.controllers
 import akka.actor.{ActorRef, ActorSystem}
 import it.scalachikoro.client.actors.GameActor
 import it.scalachikoro.client.views.stages.GameStage
+import it.scalachikoro.client.views.stages.scenes.SidePanelListener
+import it.scalachikoro.client.views.stages.scenes.components.SideEventListener
 import it.scalachikoro.koro.cards.Card
 import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.Player
@@ -12,25 +14,20 @@ import scalafx.application.{JFXApp, Platform}
 /**
  * Listener for all game events.
  */
-trait GameEventListener {
+trait GamePanelListener extends SidePanelListener {
+  /**
+   * The player wanna acquire a card.
+   *
+   * @param card Card wanna acquire.
+   */
+  def acquire(card: Card)
+}
+
+trait GameEventListener extends SideEventListener {
   /**
    * Update all views with a new game state received from the server.
    */
   def updateGameState(state: GameState)
-
-  /**
-   * The player wanna roll dices.
-   *
-   * @param n Number of dices.
-   */
-  def roll(n: Int)
-
-  /**
-   * The server have rolled the dices.
-   *
-   * @param n Number rolled.
-   */
-  def rolled(n: Int)
 
   /**
    * The player received moneys from server.
@@ -38,13 +35,6 @@ trait GameEventListener {
    * @param n Money received.
    */
   def receive(n: Int)
-
-  /**
-   * The player wanna acquire a card.
-   *
-   * @param card Card wanna acquire.
-   */
-  def acquire(card: Card)
 
   /**
    * A player have acquired a card.
@@ -68,7 +58,7 @@ trait GameEventListener {
  * @param system The Singleton Actor System.
  * @param app    The Singleton JFXApp.
  */
-class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: GameState) extends Controller with GameEventListener {
+class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: GameState) extends Controller with GamePanelListener with GameEventListener {
   private[this] val gameStage: GameStage = GameStage(state, this)
   private[this] val gameActor: ActorRef = system.actorOf(GameActor.props("game", this, ref))
   private[this] val serverGameRef: ActorRef = ref
@@ -78,7 +68,9 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
    * @inheritdoc
    */
   override def start(): Unit = {
-    Platform.runLater({ app.stage = gameStage })
+    Platform.runLater({
+      app.stage = gameStage
+    })
     println("GameController started.")
   }
 
@@ -96,11 +88,6 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
    * @inheritdoc
    */
   override def roll(n: Int): Unit = serverGameRef ! RollDice(n)
-
-  /**
-   * @inheritdoc
-   */
-  override def rolled(n: Int): Unit = ???
 
   /**
    * @inheritdoc
@@ -128,7 +115,18 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
    * @param f Function to invoke.
    */
   private[this] def withServerGameRef(optionRef: Option[ActorRef])(f: ActorRef => Unit): Unit = optionRef match {
-      case Some(ref) => f(ref)
-      case _ => println(f"No server actor.")
-    }
+    case Some(ref) => f(ref)
+    case _ => println(f"No server actor.")
+  }
+
+  override def drop(): Unit = ???
+
+  override def pass(): Unit = ???
+
+  /**
+   * Notify the view of a dice roll.
+   *
+   * @param n Dice result.
+   */
+  override def diceRolled(n: Int): Unit = gameStage diceRolled n
 }
