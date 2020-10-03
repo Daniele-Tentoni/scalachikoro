@@ -149,7 +149,7 @@ jobs:
         # Set up git user name and tag this commit.
         - git config --local user.name "Daniele Tentoni"
         - git config --local user.email "daniele.tentoni.1996@gmail.com"
-        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M')-$(git log --format=%h -1)}
         - git tag $TRAVIS_TAG
         - sbt clean packArchive
       deploy:
@@ -158,8 +158,10 @@ jobs:
         token: $GH_TOKEN
         file_glob: true
         file:
-          - /**/*.tar.gz
-          - /**/*.zip
+          - /**/client-*.tar.gz
+          - /**/client-*.zip
+          - /**/server-*.tar.gz
+          - /**/server-*.zip
         on:
           tags: true
 
