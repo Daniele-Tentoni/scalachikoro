@@ -73,6 +73,7 @@ object BoardPanel {
     padding = Insets(defaultSpacing * 2)
     val otherPlayersCards: Label = Label(f"${state.others flatMap(_.name)} Cards")
     val otherPlayersCardsList: Label = Label(f"${state.others flatMap(_.cards) flatMap(_.name)}")
+    val cardImage: ImageView = new ImageView(new Image(CardUtils.getCardPath(card)))
     val bankCards: Label = Label("Bank Cards")
     val bankCardsList: Label = Label(f"${state.cards flatMap(_.name)}")
     val playerCards: Label = Label(f"${state.player.name} cards")
