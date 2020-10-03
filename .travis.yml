@@ -160,3 +160,11 @@ jobs:
         on:
           branch: master
           tags: true
+
+stages:
+  - name: Run sbt on Linux
+    if: type = pull_request && branch != master
+  - name: Run sbt on Mac
+    if: type = pull_request && branch != master
+  - name: Deploys
+    if: type IN (pull_request, push) && branch = master
