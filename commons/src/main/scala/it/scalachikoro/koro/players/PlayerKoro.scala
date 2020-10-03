@@ -17,18 +17,21 @@ case class PlayerKoro(override val id: String, name: String, money: Int, cards: 
     else Operation.NoOperation)
 
   // TODO: Why I can't decrease here Player's moneys?
-  def calculateTaxes(n: Int, other: PlayerKoro): Seq[Operation] = other.cards.foldLeft((Seq.empty[Operation], money)){
-    (acc, card) => if(card.trigger(n, turn = false)) {
-      val tax = if(acc._2 > card.income) card.income else acc._2
-      (acc._1 :+ Operation.Give(tax, other), acc._2 - tax)
-    } else {
-      acc
-    }
+  def calculateTaxes(n: Int, other: PlayerKoro): Seq[Operation] = other.cards.foldLeft((Seq.empty[Operation], money)) {
+    (acc, card) =>
+      if (card.trigger(n, turn = false)) {
+        val tax = if (acc._2 > card.income) card.income else acc._2
+        val operations = acc._1 :+ Operation.Give(tax, other)
+        val remaings = acc._2 - tax
+        (operations, remaings)
+      } else {
+        acc
+      }
   }._1
 
   def receive(n: Int): PlayerKoro = copy(money = money + n)
 
-  def give(n: Int): PlayerKoro = if(n < money) copy(money = money - n) else copy(money = 0)
+  def give(n: Int): PlayerKoro = if (n < money) copy(money = money - n) else copy(money = 0)
 
   def hasWon: Boolean = cards.filter(AimCard.all contains _) == AimCard.all
 }

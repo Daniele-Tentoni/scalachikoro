@@ -22,7 +22,7 @@ trait GameEventListener extends BoardEventListener with SideEventListener
 
 object GameScene {
 
-  private class GameSceneImpl(startState: GameState, listener: GamePanelListener) extends GameScene {
+  private[this] class GameSceneImpl(startState: GameState, listener: GamePanelListener) extends GameScene {
     // TODO: Add a background.
     // TODO: Add a list of previous rolls.
     // TODO: Add the player card list.

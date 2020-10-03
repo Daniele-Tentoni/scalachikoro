@@ -21,7 +21,7 @@ class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("
 
   val name = "Test Actor"
 
-  private def provideActorRef(listener: MainViewActorListener) = TestActorRef[MainViewActor](MainViewActor.props(name, listener))
+  private[this] def provideActorRef(listener: MainViewActorListener) = TestActorRef[MainViewActor](MainViewActor.props(name, listener))
 
   "A MainViewActor" should {
     val mockListener = provideListener

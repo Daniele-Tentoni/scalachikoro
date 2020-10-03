@@ -8,6 +8,14 @@ import it.scalachikoro.koro.players.PlayerKoro
 trait Icon
 
 object Icon {
+  val wheat = "Wheat"
+  val cow = "Cow"
+  val gear = "Gear"
+  val bread = "Bread"
+  val factory = "Factory"
+  val fruit = "Fruit"
+  val cup = "Cup"
+  val major = "Major"
 
   case class Wheat() extends Icon
 
@@ -26,26 +34,26 @@ object Icon {
   case class Major() extends Icon
 
   implicit def string2icon(s: String): Icon = s match {
-    case "Wheat" => Wheat()
-    case "Cow" => Cow()
-    case "Gear" => Gear()
-    case "Bread" => Bread()
-    case "Factory" => Factory()
-    case "Fruit" => Fruit()
-    case "Cup" => Cup()
-    case "Major" => Major()
+    case Icon.wheat => Wheat()
+    case Icon.cow => Cow()
+    case Icon.gear => Gear()
+    case Icon.bread => Bread()
+    case Icon.factory => Factory()
+    case Icon.fruit => Fruit()
+    case Icon.cup => Cup()
+    case Icon.major => Major()
     case _ => throw new RuntimeException()
   }
 
   implicit def icon2string(s: Icon): String = s match {
-    case Wheat() => "Wheat"
-    case Cow() => "Cow"
-    case Gear() => "Gear"
-    case Bread() => "Bread"
-    case Factory() => "Factory"
-    case Fruit() => "Fruit"
-    case Cup() => "Cup"
-    case Major() => "Major"
+    case Wheat() => Icon.wheat
+    case Cow() => Icon.cow
+    case Gear() => Icon.gear
+    case Bread() => Icon.bread
+    case Factory() => Icon.factory
+    case Fruit() => Icon.fruit
+    case Cup() => Icon.cup
+    case Major() => Icon.major
     case _ => throw new RuntimeException()
   }
 
