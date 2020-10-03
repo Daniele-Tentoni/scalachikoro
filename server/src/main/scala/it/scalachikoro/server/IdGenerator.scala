@@ -5,13 +5,11 @@ import java.util.UUID
 import scala.annotation.tailrec
 
 trait IdGenerator {
-  def generateId(): String
+  def generateId(): String = UUID randomUUID() toString()
 }
 
 object MyIdGenerator extends IdGenerator {
   var ids = Set.empty[String]
-
-  override def generateId(): String = UUID randomUUID() toString()
 
   @tailrec
   def generateUniqueId(): String = {

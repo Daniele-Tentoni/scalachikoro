@@ -15,8 +15,9 @@ val akkaDependencies = Seq(akkaTyped, akkaRemote, akkaActor, akkaTestKit)
 val scalactic = "org.scalactic" %% "scalactic" % "3.2.0"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
 val scalamock = "org.scalamock" %% "scalamock" % "4.4.0" % Test
+val scalacheck = "org.scalacheck" %% "scalacheck" % "1.14.1" % Test
 
-val testDependencies = Seq(scalactic, scalaTest, scalamock)
+val testDependencies = Seq(scalactic, scalaTest, scalamock, scalacheck)
 
 // val junit = "junit" % "junit" % "4.12"
 // val cukeCore = "io.cucumber" %% "cucumber-core" % "2.0.1" % Test
