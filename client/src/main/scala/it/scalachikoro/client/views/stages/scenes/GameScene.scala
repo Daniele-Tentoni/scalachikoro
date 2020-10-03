@@ -1,7 +1,7 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.GameEventListener
-import it.scalachikoro.client.views.stages.scenes.components.SidePanel
+import it.scalachikoro.client.views.stages.scenes.components.{DicePanelListener, SidePanel}
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.koro.game.GameState
 import scalafx.geometry.Pos
@@ -12,7 +12,7 @@ trait GameScene extends BaseScene {
   def updateGameState(state: GameState)
 }
 
-trait SideEventListener {
+trait SideEventListener extends DicePanelListener {
   def drop()
 
   def pass()
@@ -22,7 +22,7 @@ trait SideEventListener {
 
 object GameScene {
 
-  private class GameSceneImpl(listener: GameEventListener) extends GameScene with SideEventListener {
+  private class GameSceneImpl(startState: GameState, listener: GameEventListener) extends GameScene with SideEventListener {
     // TODO: Add a background.
     // TODO: Add a list of previous rolls.
     // TODO: Add the player card list.
@@ -37,11 +37,13 @@ object GameScene {
 
     val rightBar: SidePanel = SidePanel(this)
     mainContent.right = rightBar
+    updateGameState(startState)
 
     override def updateGameState(state: GameState): Unit = state match {
       case GameState.BrokenGameState(message) => KoroAlert.error("Error in GameState", message)
       case GameState.LocalGameState(player, others, cards) =>
         rightBar.username(player.name)
+        // TODO: Update cards in the middle of the board.
         rightBar.addHistory("Update game state")
       case _ =>
     }
@@ -62,5 +64,5 @@ object GameScene {
     override def roll(n: Int): Unit = listener roll n
   }
 
-  def apply(listener: GameEventListener): GameScene = new GameSceneImpl(listener)
+  def apply(startState: GameState, listener: GameEventListener): GameScene = new GameSceneImpl(startState: GameState, listener)
 }

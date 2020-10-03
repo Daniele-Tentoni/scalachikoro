@@ -15,12 +15,12 @@ trait SidePanel extends BorderPane with ActionPanel {
 
 object SidePanel {
 
-  private[this] class SidePanelImpl(private[this] val listener: SideEventListener) extends SidePanel with DicePanelListener {
+  private[this] class SidePanelImpl(private[this] val listener: SideEventListener) extends SidePanel {
     padding = Insets(defaultSpacing * 2)
 
     // TODO: Add a panel for timer
 
-    val usernameLabel: Label = Label("Username")
+    val usernameLabel: Label = Label("username")
     val messageLabel: Label = Label("message")
     val timerLabel: Label = Label("timer")
     val historyLabel: Label = Label("history")
@@ -43,7 +43,7 @@ object SidePanel {
     val rightTop = new VBox()
     rightTop.children addAll stateContainer
     top = rightTop
-    val rightCenter: DicePanel = DicePanel(this)
+    val rightCenter: DicePanel = DicePanel(listener)
     center = rightCenter
     val rightBottom = new VBox()
     rightBottom.children addAll btnContainer
@@ -69,8 +69,6 @@ object SidePanel {
     override def timer(time: Int): Unit = {
       timer = time // TODO: When time reach 0, notify an event.
     }
-
-    override def roll(n: Int): Unit = ???
   }
 
   def apply(listener: SideEventListener): SidePanel = new SidePanelImpl(listener)

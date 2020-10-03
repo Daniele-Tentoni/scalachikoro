@@ -88,9 +88,9 @@ object GameMessages {
   /**
    * (Client -> Game) Say that is ready to start to play.
    *
-   * @param name Name of local Player.
+   * @param ref Name of local Player.
    */
-  case class Ready(name: String)
+  case class Ready(ref: ActorRef)
 
   /**
    * Message Game -> Client to notify the current Game.

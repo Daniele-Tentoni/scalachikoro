@@ -7,6 +7,7 @@ import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import it.scalachikoro.client.views.stages.StartupStage
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.constants.ActorConstants.{LobbyActorName, ServerActorSystemName}
+import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.PlayerRef
 import it.scalachikoro.messages.GameMessages.{Accept, Drop}
 import it.scalachikoro.messages.LobbyMessages.{Connect, Leave, WannaQueue}
@@ -127,8 +128,8 @@ class StartupController(system: ActorSystem, app: JFXApp) extends Controller wit
   /**
    * @inheritdoc
    */
-  override def gameStarted(): Unit = {
-    val gameController = new GameController(system, app)
+  override def gameStarted(ref: ActorRef, state: GameState): Unit = {
+    val gameController = new GameController(system, app, ref, state)
     gameController start()
   }
 

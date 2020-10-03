@@ -3,8 +3,9 @@ package it.scalachikoro.client.actors
 import akka.actor.{PoisonPill, Props, Terminated}
 import it.scalachikoro.actors.MyActor
 import it.scalachikoro.client.controllers.listeners.MainViewActorListener
-import it.scalachikoro.messages.GameMessages.GameInvitation
-import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
+import it.scalachikoro.koro.game.GameState
+import it.scalachikoro.messages.GameMessages.{GameInvitation, UpdateState}
+import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
@@ -43,11 +44,15 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
       this log "Game found"
       listener matchFound(name, sender)
 
-    case Start(players) =>
-      this log f"Start message received with $players"
-      listener gameStarted()
-      context become (inactive orElse terminated)
-    // TODO: Generate new view.
+    case UpdateState(remoteGame, state) =>
+      state match {
+        case GameState.BrokenGameState(message) => this log f"Received a broken game state with $message"
+        case a: GameState.LocalGameState =>
+          this log f"Update state message from ${remoteGame.path} with updated game state"
+          listener gameStarted(remoteGame, a)
+          context become (inactive orElse terminated)
+        case a: Any => this log f"Received an unknown state message with $a"
+      }
 
     case _ => this log f"Received unknown message"
   }

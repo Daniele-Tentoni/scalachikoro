@@ -16,7 +16,7 @@ class GameActor(name: String, listener: GameEventListener, ref: ActorRef) extend
   def receive: Receive = {
     case UpdateState(ref, state) =>
       this log f"Received a new game state $state from $ref"
-      listener.updateGameState(ref, state)
+      listener.updateGameState(state)
     case PlayerTurn() =>
       this log f"Received player turn"
       // TODO: Tell to player how many dices wanna roll.
@@ -44,7 +44,7 @@ class GameActor(name: String, listener: GameEventListener, ref: ActorRef) extend
 
   override def preStart(): Unit = {
     super.preStart()
-    ref ! Ready(name) // TODO: Notify the remote server that all clients are ready to play.
+    ref ! Ready(self) // TODO: Notify the remote server that all clients are ready to play.
     println("Sent ready")
   }
 }

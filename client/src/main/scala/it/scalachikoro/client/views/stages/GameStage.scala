@@ -10,8 +10,8 @@ trait GameStage extends BaseStage {
 
 object GameStage {
 
-  private[this] class GameStageImpl(listener: GameEventListener) extends GameStage {
-    private[this] val gameScene = GameScene(listener)
+  private[this] class GameStageImpl(startState: GameState, listener: GameEventListener) extends GameStage {
+    private[this] val gameScene = GameScene(startState, listener)
 
     scene = gameScene
     onCloseRequest = _ => System.exit(0)
@@ -19,5 +19,5 @@ object GameStage {
     override def updateGameState(state: GameState): Unit = gameScene.updateGameState(state)
   }
 
-  def apply(listener: GameEventListener): GameStage = new GameStageImpl(listener)
+  def apply(startState: GameState, listener: GameEventListener): GameStage = new GameStageImpl(startState, listener)
 }

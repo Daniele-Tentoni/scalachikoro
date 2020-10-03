@@ -1,6 +1,7 @@
 package it.scalachikoro.client.controllers.listeners
 
 import akka.actor.ActorRef
+import it.scalachikoro.koro.game.GameState
 
 trait MainViewActorListener {
   /**
@@ -59,5 +60,5 @@ trait MainViewActorListener {
   /**
    * The Server says that a Game is started.
    */
-  def gameStarted()
+  def gameStarted(ref: ActorRef, state: GameState)
 }
