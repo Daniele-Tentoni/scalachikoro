@@ -15,8 +15,7 @@ class IdGeneratorSpec
       val id = MyIdGenerator.generateUniqueId()
       val old = l
       l = l + id
-      old.contains(id) should be
-      false
+      !old.contains(id)
     }
   }
 }

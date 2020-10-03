@@ -9,14 +9,8 @@ import org.scalatest.propspec.AnyPropSpec
 class UtilsSpec
   extends AnyPropSpec
     with should.Matchers {
-  val evenInts: Gen[Int] = for (n <- Gen choose(0, 1000)) yield n
-  property("MyIdGenerator should produce unique ids") {
-    forAll(evenInts) { n: Int =>
-      val r = Utils.secureRandom(n)
-      r  should be
-      r should be
-      assert(n < n)
-      assert(n > 0)
-    }
+  val maxes: Gen[Int] = Gen.choose(1, 6)
+  property("Secure random should produce random numbers") {
+    forAll(maxes) { n: Int => (Utils secureRandom n) > 0 }
   }
 }
