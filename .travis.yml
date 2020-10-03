@@ -130,6 +130,9 @@ jobs:
       script:
         - sbt coverage test coverageReport coverageAggregate doc
         # - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./target/scala-2.12/coverage-report/coberatura.xml
+      before_deploy:
+        - mkdir public
+        - cp
       deploy:
         provider: pages
         strategy: git
@@ -158,7 +161,6 @@ jobs:
           - /**/*.tar.gz
           - /**/*.zip
         on:
-          branch: master
           tags: true
 
 stages:
