@@ -1,12 +1,10 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.GamePanelListener
-import it.scalachikoro.client.views.stages.scenes.components.{DicePanelListener, SideEventListener, SidePanel}
+import it.scalachikoro.client.views.stages.scenes.components.{BoardPanel, DicePanelListener, SideEventListener, SidePanel}
 import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.koro.game.GameState
-import scalafx.geometry.Pos
 import scalafx.scene.control.ButtonType
-import scalafx.scene.layout.VBox
 
 trait GameScene extends BaseScene with SidePanelListener with SideEventListener {
   def updateGameState(state: GameState)
@@ -26,23 +24,19 @@ object GameScene {
     // TODO: Add the player card list.
     // TODO: Add the deck card list.
 
-    val center: VBox = new VBox() {
-      alignment = Pos.Center
-      maxWidth = 400
-      spacing = 10
-    }
-    mainContent.center = center
+    val board: BoardPanel = BoardPanel()
+    mainContent.center = board
 
-    val sidePanel: SidePanel = SidePanel(this)
-    mainContent.right = sidePanel
+    val side: SidePanel = SidePanel(this)
+    mainContent.right = side
     updateGameState(startState)
 
     override def updateGameState(state: GameState): Unit = state match {
       case GameState.BrokenGameState(message) => KoroAlert.error("Error in GameState", message)
       case GameState.LocalGameState(player, others, cards) =>
-        sidePanel.username(player.name)
+        side.username(player.name)
         // TODO: Update cards in the middle of the board.
-        sidePanel.addHistory("Update game state")
+        side.addHistory("Update game state")
       case _ =>
     }
 
@@ -66,7 +60,7 @@ object GameScene {
      *
      * @param n Dice result.
      */
-    override def diceRolled(n: Int): Unit = sidePanel diceRolled n
+    override def diceRolled(n: Int): Unit = side diceRolled n
   }
 
   def apply(startState: GameState, listener: GamePanelListener): GameScene = new GameSceneImpl(startState: GameState, listener)

@@ -71,7 +71,6 @@ class GameActor(playersNumber: Int) extends MyActor {
     broadcastMessage(turn.all.filterNot(_ == turn.actual).map(_.actorRef), OpponentTurn(turn.actual))
     this log f"Sent opponent turn to correct players."
     context.become(rollTime(game, turn.actual) orElse terminated)
-    this log f"Changed behaviour."
   }
 
   private[this] def rollTime(actual: Game, ref: PlayerRef): Receive = {
