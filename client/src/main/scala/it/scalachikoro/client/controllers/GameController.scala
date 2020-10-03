@@ -4,45 +4,25 @@ import akka.actor.{ActorRef, ActorSystem}
 import it.scalachikoro.client.actors.GameActor
 import it.scalachikoro.client.views.stages.GameStage
 import it.scalachikoro.client.views.stages.scenes.SidePanelListener
-import it.scalachikoro.client.views.stages.scenes.components.SideEventListener
+import it.scalachikoro.client.views.stages.scenes.components.{BoardEventListener, BoardPanelListener, SideEventListener}
+import it.scalachikoro.client.views.utils.KoroAlert
 import it.scalachikoro.koro.cards.Card
 import it.scalachikoro.koro.game.GameState
-import it.scalachikoro.koro.players.Player
-import it.scalachikoro.messages.GameMessages.{Ready, RollDice}
+import it.scalachikoro.koro.players.{Player, PlayerKoro}
+import it.scalachikoro.messages.GameMessages.{Acquire, Drop, EndTurn, Ready, RollDice}
 import scalafx.application.{JFXApp, Platform}
+import scalafx.scene.control.ButtonType
 
 /**
  * Listener for all game events.
  */
-trait GamePanelListener extends SidePanelListener {
-  /**
-   * The player wanna acquire a card.
-   *
-   * @param card Card wanna acquire.
-   */
-  def acquire(card: Card)
-}
+trait GamePanelListener extends SidePanelListener with BoardPanelListener
 
-trait GameEventListener extends SideEventListener {
+trait GameEventListener extends SideEventListener with BoardEventListener{
   /**
    * Update all views with a new game state received from the server.
    */
   def updateGameState(state: GameState)
-
-  /**
-   * The player received moneys from server.
-   *
-   * @param n Money received.
-   */
-  def receive(n: Int)
-
-  /**
-   * A player have acquired a card.
-   *
-   * @param player Player that have done the operation.
-   * @param card   Card acquired.
-   */
-  def acquired(player: Player, card: Card)
 
   /**
    * A player has won!
@@ -92,22 +72,30 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
   /**
    * @inheritdoc
    */
-  override def receive(n: Int): Unit = ???
+  override def receive(n: Int, from: String): Unit = gameStage receive(n, from)
+
+  /**
+   * The player must give moneys to another.
+   *
+   * @param n  Amount of moneys.
+   * @param to Receiver.
+   */
+  override def give(n: Int, from: PlayerKoro, to: PlayerKoro): Unit = gameStage give(n, from, to)
 
   /**
    * @inheritdoc
    */
-  override def acquire(card: Card): Unit = ???
+  override def acquire(card: Card): Unit = serverGameRef ! Acquire(card)
 
   /**
    * @inheritdoc
    */
-  override def acquired(player: Player, card: Card): Unit = ???
+  override def acquired(player: Player, card: Card): Unit = gameStage acquired (player, card)
 
   /**
    * @inheritdoc
    */
-  override def playerWon(player: Player): Unit = ???
+  override def playerWon(player: Player): Unit = KoroAlert.info(f"${player.name} won!", f"${player.name} have won the game!")
 
   /**
    * Invoke a function only if have some actor reference.
@@ -119,9 +107,18 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
     case _ => println(f"No server actor.")
   }
 
-  override def drop(): Unit = ???
+  override def drop(): Unit = {
+    val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
+    if (response.contains(ButtonType.OK)) {
+      serverGameRef ! Drop()
+    } else {
+      KoroAlert.info("Well", "Well... Very well!") showAndWait()
+    }
+  }
 
-  override def pass(): Unit = ???
+  override def pass(): Unit = {
+    serverGameRef ! EndTurn()
+  }
 
   /**
    * Notify the view of a dice roll.

@@ -17,7 +17,7 @@ trait SideEventListener extends DiceEventListener
 
 object SidePanel {
 
-  private[this] class SidePanelImpl(private[this] val listener: SidePanelListener) extends SidePanel {
+  private[this] class SidePanelImpl(listener: SidePanelListener) extends SidePanel {
     padding = Insets(defaultSpacing * 2)
 
     // TODO: Add a panel for timer

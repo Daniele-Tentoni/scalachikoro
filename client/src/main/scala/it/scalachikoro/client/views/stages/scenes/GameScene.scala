@@ -1,20 +1,24 @@
 package it.scalachikoro.client.views.stages.scenes
 
 import it.scalachikoro.client.controllers.GamePanelListener
-import it.scalachikoro.client.views.stages.scenes.components.{BoardPanel, DicePanelListener, SideEventListener, SidePanel}
+import it.scalachikoro.client.views.stages.scenes.components.{BoardEventListener, BoardPanel, DicePanelListener, SideEventListener, SidePanel}
 import it.scalachikoro.client.views.utils.KoroAlert
+import it.scalachikoro.koro.cards.Card
 import it.scalachikoro.koro.game.GameState
-import scalafx.scene.control.ButtonType
+import it.scalachikoro.koro.game.GameState.{BrokenGameState, LocalGameState}
+import it.scalachikoro.koro.players.{Player, PlayerKoro}
 
-trait GameScene extends BaseScene with SidePanelListener with SideEventListener {
+trait GameScene extends BaseScene with GameEventListener {
   def updateGameState(state: GameState)
 }
 
-trait SidePanelListener extends DicePanelListener {
+trait SidePanelListener extends DicePanelListener{
   def drop()
 
   def pass()
 }
+
+trait GameEventListener extends BoardEventListener with SideEventListener
 
 object GameScene {
 
@@ -24,10 +28,13 @@ object GameScene {
     // TODO: Add the player card list.
     // TODO: Add the deck card list.
 
-    val board: BoardPanel = BoardPanel()
+    val board: BoardPanel = startState match {
+      case b: BrokenGameState => BoardPanel(b)
+      case a: LocalGameState => BoardPanel(a, listener)
+    }
     mainContent.center = board
 
-    val side: SidePanel = SidePanel(this)
+    val side: SidePanel = SidePanel(listener)
     mainContent.right = side
     updateGameState(startState)
 
@@ -40,27 +47,25 @@ object GameScene {
       case _ =>
     }
 
-    override def drop(): Unit = {
-      val response = KoroAlert.confirmation("Drop game", "Are you sure to drop the game?") showAndWait()
-      if (response.contains(ButtonType.OK)) {
-        KoroAlert.info("No!!!", "Too bad. You can't drop.") showAndWait()
-      } else {
-        KoroAlert.info("Well", "Well... Very well!") showAndWait()
-      }
-    }
-
-    override def pass(): Unit = {
-      println("Pass")
-    }
-
-    override def roll(n: Int): Unit = listener roll n
-
     /**
-     * Notify the view of a dice roll.
-     *
-     * @param n Dice result.
+     * @inheritdoc
      */
     override def diceRolled(n: Int): Unit = side diceRolled n
+
+    /**
+     * @inheritdoc
+     */
+    override def receive(n: Int, from: String): Unit = board receive (n, from)
+
+    /**
+     * @inheritdoc
+     */
+    override def give(n: Int, from: PlayerKoro, to: PlayerKoro): Unit = board give (n, from, to)
+
+    /**
+     * @inheritdoc
+     */
+    override def acquired(player: Player, card: Card): Unit = board acquired(player, card)
   }
 
   def apply(startState: GameState, listener: GamePanelListener): GameScene = new GameSceneImpl(startState: GameState, listener)
