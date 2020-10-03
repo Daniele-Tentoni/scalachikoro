@@ -132,7 +132,7 @@ jobs:
         # - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./target/scala-2.12/coverage-report/coberatura.xml
       before_deploy:
         - mkdir public
-        - cp
+        - ./source/scripts/deploy2pages.sh
       deploy:
         provider: pages
         strategy: git
