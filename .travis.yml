@@ -163,6 +163,7 @@ jobs:
           - /**/server-*.tar.gz
           - /**/server-*.zip
         on:
+          branch: master
           tags: true
 
 stages:

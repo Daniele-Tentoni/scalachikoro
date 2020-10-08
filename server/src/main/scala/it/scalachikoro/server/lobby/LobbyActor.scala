@@ -20,6 +20,7 @@ class LobbyActor extends MyActor {
   var lobby: Lobby[PlayerRef] = PlayersLobby(Seq.empty)
 
   def receive: Receive = {
+    // TODO: Ref isn't sender? Dosen't work with unit tests.
     case Connect(name, ref) =>
       this log f"${ref.path} with $name say Hi."
       ref ! Hi("Server")
@@ -49,7 +50,7 @@ class LobbyActor extends MyActor {
     val pickedPlayers = p._2
     pickedPlayers match {
       case Some(value) =>
-        this log f"Found ${value map(_.name)} to start a match."
+        this log f"Found ${value map (_.name)} to start a match."
         generateGameActor(value)
       case _ =>
         this log f"No players found to start a match."
