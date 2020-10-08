@@ -126,4 +126,6 @@ class GameController(system: ActorSystem, app: JFXApp, ref: ActorRef, state: Gam
    * @param n Dice result.
    */
   override def diceRolled(n: Int): Unit = gameStage diceRolled n
+
+  override def onClick(card: Card): Unit = KoroAlert.info("Well", f"${card.name}... Very well!") showAndWait()
 }

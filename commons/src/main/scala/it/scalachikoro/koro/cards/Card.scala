@@ -116,7 +116,7 @@ trait MayTrigger {
   def trigger(n: Int): Boolean = activation contains n
 }
 
-case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: Int, quantity: Int, img: String = "") extends Acquirable {
+case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: Int, quantity: Int) extends Acquirable {
   def all: Seq[Card] = (0 until quantity).map(_ => copy())
 
   def trigger(n: Int, turn: Boolean): Boolean = cType match {

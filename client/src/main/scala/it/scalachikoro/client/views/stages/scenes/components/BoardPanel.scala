@@ -10,7 +10,7 @@ import scalafx.scene.layout.{BorderPane, HBox, VBox}
 
 trait BoardPanel extends BorderPane with ActionPanel with BoardEventListener
 
-trait BoardPanelListener {
+trait BoardPanelListener extends CardListPanelListener {
   /**
    * The player wanna acquire a card.
    *
@@ -51,33 +51,32 @@ object BoardPanel {
     /**
      * @inheritdoc
      */
-    override def receive(n: Int, from: String): Unit = println("Broken")
+    override def receive(n: Int, from: String): Unit = println(f"Broken: $message")
 
     /**
      * @inheritdoc
      */
-    override def give(n: Int, from: PlayerKoro, to: PlayerKoro): Unit = println("Broken")
+    override def give(n: Int, from: PlayerKoro, to: PlayerKoro): Unit = println(f"Broken: $message")
 
     /**
      * @inheritdoc
      */
-    override def acquired(player: Player, card: Card): Unit = println("Broken")
+    override def acquired(player: Player, card: Card): Unit = println(f"Broken: $message")
 
     /**
      * @inheritdoc
      */
-    override def enable(b: Boolean): Unit = println("Broken")
+    override def enable(b: Boolean): Unit = println(f"Broken: $message")
   }
 
   private[this] class BoardPanelImpl(state: LocalGameState, listener: BoardPanelListener) extends BoardPanel {
     padding = Insets(defaultSpacing * 2)
     val otherPlayersCards: Label = Label(f"${state.others flatMap(_.name)} Cards")
-    val otherPlayersCardsList: Label = Label(f"${state.others flatMap(_.cards) flatMap(_.name)}")
-    // val cardImage: ImageView = new ImageView(new Image(CardUtils.getCardPath(card)))
+    val otherPlayersCardsList: CardListPanel = CardListPanel(state.others flatMap(_.cards), listener)
     val bankCards: Label = Label("Bank Cards")
-    val bankCardsList: Label = Label(f"${state.cards flatMap(_.name)}")
+    val bankCardsList: CardListPanel = CardListPanel(state.cards, listener)
     val playerCards: Label = Label(f"${state.player.name} cards")
-    val playerCardsList: Label = Label(f"${state.player.cards flatMap(_.name)}")
+    val playerCardsList: CardListPanel = CardListPanel(state.player.cards, listener)
 
     val acquire: Button = new Button("Acquire") {
       onAction = _ => acquireConfirmation()
