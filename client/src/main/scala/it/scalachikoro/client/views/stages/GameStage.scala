@@ -6,7 +6,6 @@ import it.scalachikoro.client.views.stages.scenes.components.{BoardEventListener
 import it.scalachikoro.koro.cards.Card
 import it.scalachikoro.koro.game.GameState
 import it.scalachikoro.koro.players.{Player, PlayerKoro}
-import scalafx.application.Platform
 
 trait GameStage extends BaseStage with SideEventListener with BoardEventListener {
   def updateGameState(state: GameState)
@@ -17,7 +16,7 @@ object GameStage {
   private[this] class GameStageImpl(startState: GameState, listener: GamePanelListener) extends GameStage {
     private[this] val gameScene = GameScene(startState, listener)
 
-    Platform.runLater {scene = gameScene}
+    scene = gameScene
 
     onCloseRequest = _ => System.exit(0)
 

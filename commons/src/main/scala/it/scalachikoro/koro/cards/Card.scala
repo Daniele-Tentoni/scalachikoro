@@ -169,7 +169,7 @@ object Card {
 
   def fruitMarket: Card = Card("Fruit and Vegetable Market", SecondaryIndustry(Seq(11, 12), Wheat()), Fruit(), 1, 1, 6)
 
-  def cafe: Card = Card("Cafe'", Restaurants(Seq(3)), Cup(), 1, 1, 6)
+  def cafe: Card = Card("Cafe", Restaurants(Seq(3)), Cup(), 1, 1, 6)
 
   def familyRest: Card = Card("Family Restaurant", Restaurants(Seq(9, 10)), Cup(), 1, 1, 6)
 

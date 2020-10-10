@@ -51,14 +51,14 @@ class MainViewActor(name: String, listener: MainViewActorListener) extends MyAct
           this log f"Update state message from ${remoteGame.path} with updated game state"
           listener gameStarted(remoteGame, a)
           context become (inactive orElse terminated)
-        case a: Any => this log f"Received an unknown state message with $a"
+        case a: Any => this log f"Received unknown state message with $a"
       }
 
-    case _ => this log f"Received unknown message"
+    case a => this log f"Received unknown message $a."
   }
 
   def inactive: Receive = {
-    case _ => this log "Received an unknown message."
+    case a => this log f"Received unknown message $a."
   }
 
   private[this] def terminated: Receive = {

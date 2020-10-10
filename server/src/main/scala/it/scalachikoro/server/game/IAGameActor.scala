@@ -50,7 +50,7 @@ class IAGameActor(server: ActorRef) extends MyActor {
       this log f"${player.name} won."
       context become terminated
 
-    case _ => println(f"Received unknown message")
+    case a => this log f"Received unknown message $a"
   }
 
   def terminated: Receive = {
@@ -60,6 +60,6 @@ class IAGameActor(server: ActorRef) extends MyActor {
         System.err.println(f"Terminating main view actor...")
         self ! PoisonPill
       }
-    case _ => println(f"Received unknown message")
+    case a => this log f"Received unknown message $a"
   }
 }

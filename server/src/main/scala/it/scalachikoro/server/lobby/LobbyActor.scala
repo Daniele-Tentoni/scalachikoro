@@ -41,7 +41,7 @@ class LobbyActor extends MyActor {
         ref.actorRef ! LeftQueue()
       }
 
-    case _ => this log f"${sender.path} send me an unknown message."
+    case a => this log f"${sender.path} send me an unknown message $a."
   }
 
   private[this] def checkAndCreateGame(): Unit = {

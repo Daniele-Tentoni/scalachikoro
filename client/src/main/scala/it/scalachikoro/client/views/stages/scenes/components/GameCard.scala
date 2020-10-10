@@ -18,7 +18,9 @@ object GameCard {
   }
 
   private[this] class GameCardImpl(val card: Card, listener: ClickListener) extends GameCard {
-    val cardImage: ImageView = new ImageView(new Image(card.imgPath())) {
+    val imgPath: String = card.imgPath()
+    println(imgPath)
+    val cardImage: ImageView = new ImageView(new Image(imgPath)) {
       fitHeight = 100
       preserveRatio = true
     }
