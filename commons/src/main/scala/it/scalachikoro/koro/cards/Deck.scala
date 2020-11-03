@@ -1,6 +1,6 @@
 package it.scalachikoro.koro.cards
 
-import scala.util.Random
+import it.scalachikoro.Utils
 
 case class Deck(cards: Seq[Card]) {
   def visibleCards: Seq[Card] = cards take 15
@@ -20,7 +20,7 @@ case class Deck(cards: Seq[Card]) {
 object Deck {
   def sorted: Deck = Deck(Card.all)
 
-  def shuffled: Deck = Deck(Random.shuffle(Card.all))
+  def shuffled: Deck = Deck(Utils.secureShuffle(Card.all))
 
   def empty: Deck = Deck(Seq.empty)
 }
