@@ -18,7 +18,8 @@ class DeckSpec extends AnyWordSpec with Matchers {
         assertResult(Card.all take 15)(Deck.sorted.visibleCards)
       }
       "pick the first card" in {
-        assertResult(Card.all.headOption)(Deck.sorted.pickCard(1)._2)
+        val optionCard = Card.all.headOption
+        assertResult(optionCard)(Deck.sorted.pickCard(1)._2)
       }
     }
     "created empty" should {

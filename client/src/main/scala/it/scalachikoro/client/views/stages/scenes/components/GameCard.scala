@@ -14,7 +14,7 @@ trait ClickListener {
 object GameCard {
 
   implicit class RichCard(c: Card) {
-    def imgPath() = f"/img/cards/${c.name.replace(" ", "_").toLowerCase}_card.png"
+    def imgPath(): String = f"/img/cards/${c.name.replace(" ", "_").toLowerCase}_card.png"
   }
 
   private[this] class GameCardImpl(val card: Card, listener: ClickListener) extends GameCard {

@@ -20,10 +20,9 @@ case class PlayerKoro(override val id: String, name: String, money: Int, cards: 
   def calculateTaxes(n: Int, other: PlayerKoro): Seq[Operation] = other.cards.foldLeft((Seq.empty[Operation], money)) {
     (acc, card) =>
       if (card.trigger(n, turn = false)) {
-        val tax = if (acc._2 > card.income) card.income else acc._2
-        val operations = acc._1 :+ Operation.Give(tax, other)
-        val remaings = acc._2 - tax
-        (operations, remaings)
+        val moneys = acc._2
+        val tax = if (moneys > card.income) card.income else acc._2
+        (acc._1 :+ Operation.Give(tax, other), moneys - tax)
       } else {
         acc
       }
@@ -41,5 +40,7 @@ object PlayerKoro {
 
   def init(id: String, name: String): PlayerKoro = new PlayerKoro(id, name, 0, Card.starterCards)
 
-  def bank = new PlayerKoro("Bank", "Bank", 999, Seq.empty)
+  val bankName = "Bank"
+
+  def bank: PlayerKoro = new PlayerKoro(bankName, bankName, 999, Seq.empty)
 }

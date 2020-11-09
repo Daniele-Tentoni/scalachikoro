@@ -4,9 +4,7 @@ import it.scalachikoro.koro.cards.Card
 import scalafx.geometry.Insets
 import scalafx.scene.layout.{BorderPane, VBox}
 
-trait CardListPanel extends BorderPane with ActionPanel {
-
-}
+trait CardListPanel extends BorderPane with ActionPanel
 
 trait CardListPanelListener extends ClickListener
 

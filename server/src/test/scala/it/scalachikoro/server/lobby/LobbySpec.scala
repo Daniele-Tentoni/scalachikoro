@@ -27,15 +27,15 @@ class LobbySpec extends AnyWordSpec {
     "reach maximum players" should {
       "don't produce a list if there are few players" in {
         lobby = lobby + PlayerRef(ActorRef.noSender, "0", "1")
-        val p = lobby.players(2)
-        assert(!p._1.isEmpty)
-        assert(p._2.isEmpty)
+        val (newLobby, player) = lobby.players(2)
+        assert(!newLobby.isEmpty)
+        assert(player.isEmpty)
       }
       "produce a list if there are few players" in {
         lobby = lobby + PlayerRef(ActorRef.noSender, "1", "2")
-        val p = lobby.players(2)
-        assert(p._1.isEmpty)
-        assert(p._2.isDefined)
+        val (newLobby, player) = lobby.players(2)
+        assert(newLobby.isEmpty)
+        assert(player.isDefined)
       }
     }
   }

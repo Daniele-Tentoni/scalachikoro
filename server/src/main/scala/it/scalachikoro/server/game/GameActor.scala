@@ -37,18 +37,19 @@ class GameActor(playersNumber: Int) extends MyActor {
     case Accept(name) =>
       this log f"Player $name is ready"
       val player = turn.all.find(_.name == name)
-      if (player.isEmpty) {
-        this log f"Player ${sender.path} with name $name didn't found."
-        terminated
-      } else {
-        val updated = readyPlayers :+ PlayerKoro.init(player.get.id, player.get.name)
-        if (updated.length == playersNumber) {
-          this log "Start game"
-          initializeGame(updated)
-        } else {
-          this log f"Initialized by ${updated.size}, waiting for ${playersNumber - updated.size}"
-          context become(initializing(updated) orElse terminated)
-        }
+      player match {
+        case Some(value) =>
+          val updated = readyPlayers :+ PlayerKoro.init(value.id, value.name)
+          if (updated.length == playersNumber) {
+            this log "Start game"
+            initializeGame(updated)
+          } else {
+            this log f"Initialized by ${updated.size}, waiting for ${playersNumber - updated.size}"
+            context become (initializing(updated) orElse terminated)
+          }
+        case None =>
+          this log f"Player ${sender.path} with name $name didn't found."
+          terminated
       }
     case Drop() =>
       context become terminated
@@ -97,7 +98,7 @@ class GameActor(playersNumber: Int) extends MyActor {
       context.become(acquireTime(actual, turn.actual) orElse terminated)
   }
 
-  private [this] def acquireTime(actual: Game, ref: PlayerRef): Receive = {
+  private[this] def acquireTime(actual: Game, ref: PlayerRef): Receive = {
     case Acquire(card) if ref.actorRef == sender =>
       val newState = actual acquireCard(card, ref.id)
       newState match {
@@ -115,21 +116,21 @@ class GameActor(playersNumber: Int) extends MyActor {
 
   private[this] def nextTurn(actual: Game): Unit = {
     turn.next.actorRef ! PlayerTurn
-    broadcastMessage(turn.all filterNot(_ == turn.actual) map(_.actorRef), OpponentTurn(turn.actual))
-    context become(rollTime(actual, turn.actual) orElse terminated)
+    broadcastMessage(turn.all filterNot (_ == turn.actual) map (_.actorRef), OpponentTurn(turn.actual))
+    context become (rollTime(actual, turn.actual) orElse terminated)
   }
 
   private[this] def terminated: Receive = {
     case Terminated(ref) =>
-      turn.all find(_.actorRef == ref) match {
+      turn.all find (_.actorRef == ref) match {
         case Some(player) =>
-          System.err println(f"Player ${player.name} terminated.")
-          broadcastMessage(turn.all filterNot(_.actorRef == ref) map(_.actorRef), Drop()) // TODO: Change message.
+          System.err println (f"Player ${player.name} terminated.")
+          broadcastMessage(turn.all filterNot (_.actorRef == ref) map (_.actorRef), Drop()) // TODO: Change message.
           context.system.scheduler.scheduleOnce(20.second) {
-            System.err println(f"Terminating game actor...")
+            System.err println (f"Terminating game actor...")
             self ! PoisonPill
           }
-        case _ => System.err println(f"Client with ${ref.path} not found.");
+        case _ => System.err println (f"Client with ${ref.path} not found.");
       }
     case a: Any => this log f"Received unknown message while in terminated $a"
   }
@@ -138,5 +139,5 @@ class GameActor(playersNumber: Int) extends MyActor {
     case _ => sender ! Drop() // TODO: Change this message.
   }
 
-  private[this] def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs foreach(_ ! message)
+  private[this] def broadcastMessage(refs: Seq[ActorRef], message: Any): Unit = refs foreach (_ ! message)
 }

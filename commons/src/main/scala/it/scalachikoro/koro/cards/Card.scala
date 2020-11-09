@@ -179,7 +179,7 @@ object Card {
 
   def businessCenter: Card = Card("Business Center", CardType.Major(Seq(6)), Icon.Major(), 1, 1, 4)
 
-  def starterCards = Seq(wheatField, bakery)
+  def starterCards: Seq[Card] = Seq(wheatField, bakery)
 
   def all: Seq[Card] = wheatField.all ++ ranch.all ++ forest.all ++ mine.all ++ appleOrchard.all ++
     bakery.all ++ convStore.all ++ cheeseFact.all ++ furnitureFact.all ++ fruitMarket.all ++ cafe.all ++

@@ -3,6 +3,11 @@ package it.scalachikoro.koro.cards
 import it.scalachikoro.Utils
 
 case class Deck(cards: Seq[Card]) {
+  /**
+   * Take the firsts 15 cards to show to user.
+   *
+   * @return 15 cards from top of deck.
+   */
   def visibleCards: Seq[Card] = cards take 15
 
   def pickCard(i: Int): (Deck, Option[Card]) = cards match {

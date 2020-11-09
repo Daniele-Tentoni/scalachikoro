@@ -20,7 +20,8 @@ trait StartupStage extends BaseStage {
 }
 
 object StartupStage {
-  private case class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
+
+  private[this] case class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
     private[this] val mainScene: BaseScene = StartupScene(listener)
     private[this] var currentScene: BaseScene = mainScene // TODO: Change to a Scene Stack?
 
