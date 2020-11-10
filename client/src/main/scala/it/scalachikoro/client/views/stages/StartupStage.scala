@@ -20,6 +20,7 @@ trait StartupStage extends BaseStage {
 }
 
 object StartupStage {
+  private[this] val wrongSceneError = "Wrong scenes on."
 
   private[this] case class StartupStageImpl(listener: MainViewActorListener) extends StartupStage {
     private[this] val mainScene: BaseScene = StartupScene(listener)
@@ -29,7 +30,7 @@ object StartupStage {
     onCloseRequest = _ => System.exit(0)
 
     override def goToQueueScene(name: String): Unit = currentScene match {
-      case QueueScene(_, _) => println("Wrong scenes on.")
+      case QueueScene(_, _) => println(wrongSceneError)
       case _ =>
         val queueScene = QueueScene(name, listener) // TODO: Why server name arrive?
         scene = queueScene
@@ -38,16 +39,16 @@ object StartupStage {
 
     override def queued(n: Int): Unit = currentScene match {
       case a: QueueScene => a queued n
-      case _ => println("Wrong scenes on.")
+      case _ => println(wrongSceneError)
     }
 
     override def enqueued(): Unit = currentScene match {
       case scene: QueueScene => scene enqueued()
-      case _ => println("Wrong scenes on.")
+      case _ => println(wrongSceneError)
     }
 
     override def goToMainScene(): Unit = currentScene match {
-      case StartupScene(_) => println("Wrong scenes on.")
+      case StartupScene(_) => println(wrongSceneError)
       case _ =>
         scene = mainScene
         currentScene = mainScene

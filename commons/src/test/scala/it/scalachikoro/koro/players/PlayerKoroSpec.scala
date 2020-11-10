@@ -50,7 +50,7 @@ class PlayerKoroSpec extends AnyWordSpec {
       "Have default values" in {
         assertResult(PlayerKoro.bankName)(b.id)
         assertResult(PlayerKoro.bankName)(b.name)
-        assertResult(999)(b.money)
+        assertResult(PlayerKoro.bankMoney)(b.money)
       }
       "Have no cards" in {
         assert(b.cards.isEmpty)

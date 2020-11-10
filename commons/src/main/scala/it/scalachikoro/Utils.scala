@@ -6,6 +6,8 @@ import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.ArrayBuffer
 
 object Utils {
+  private[this] val defaultBytes = 32
+
   /**
    * Get a secure random integer from Java.
    *
@@ -14,7 +16,7 @@ object Utils {
    */
   def secureRandom(max: Int): Int = {
     val r: SecureRandom = new SecureRandom()
-    val seed = r.generateSeed(32)
+    val seed = r.generateSeed(defaultBytes)
     r.nextBytes(seed)
     seed.hashCode() % max + 1
   }

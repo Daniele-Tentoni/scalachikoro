@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class TurnSpec extends AnyWordSpec with Matchers {
   "A Turn" when {
     val ints: Seq[Int] = Seq(1, 2, 3)
-    var turn: Turn[Int] = Turn(ints)
+    val turn: Turn[Int] = Turn(ints)
     "created" should {
       "have items" in {
         assertResult(ints)(turn.all)

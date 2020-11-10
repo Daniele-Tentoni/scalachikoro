@@ -71,8 +71,8 @@ object BoardPanel {
 
   private[this] class BoardPanelImpl(state: LocalGameState, listener: BoardPanelListener) extends BoardPanel {
     padding = Insets(defaultSpacing * 2)
-    val otherPlayersCards: Label = Label(f"${state.others flatMap(_.name)} Cards")
-    val otherPlayersCardsList: CardListPanel = CardListPanel(state.others flatMap(_.cards), listener)
+    val otherPlayersCards: Label = Label(f"${state.others flatMap (_.name)} Cards")
+    val otherPlayersCardsList: CardListPanel = CardListPanel(state.others flatMap (_.cards), listener)
     val bankCards: Label = Label("Bank Cards")
     val bankCardsList: CardListPanel = CardListPanel(state.cards, listener)
     val playerCards: Label = Label(f"${state.player.name} cards")
@@ -98,8 +98,8 @@ object BoardPanel {
     bottom = playerContainer
 
     def acquireConfirmation(): Unit = {
-      val result = KoroAlert.confirmation(f"You really wanna acquire", f"You really wanna acquire").showAndWait()
-      if(result contains ButtonType.OK)
+      val result = KoroAlert.confirmation("Sure?", "You really wanna acquire").showAndWait()
+      if (result contains ButtonType.OK)
         println("wanna acquire") // TODO: Go with the selected card.
     }
 

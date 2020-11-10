@@ -55,8 +55,8 @@ object DicePanel {
      * @inheritdoc
      */
     override def enable2dice(b: Boolean): Unit = {
-      secondEnabled = b
-      roll2Btn setDisable secondEnabled
+      if (!secondEnabled) secondEnabled = true
+      roll2Btn setDisable b
     }
 
     /**
@@ -64,7 +64,7 @@ object DicePanel {
      */
     override def enable(b: Boolean): Unit = {
       roll1Btn setDisable b
-      if(secondEnabled) roll2Btn setDisable b else roll2Btn setDisable true
+      roll2Btn setDisable (if (secondEnabled) b else true)
     }
 
     override def diceRolled(n: Int): Unit = diceLabel setText n.toString

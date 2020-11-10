@@ -65,7 +65,10 @@ class GameActor(playersNumber: Int) extends MyActor {
       .map(p => (p, players
         .find(k => k.id == p.id)
         .getOrElse(PlayerKoro.bank))
-      ).foreach(p => p._1.actorRef ! UpdateState(self, GameState(game, p._2)))
+      ).foreach(p =>{
+      val (ref, koro) = p
+      ref.actorRef ! UpdateState(self, GameState(game, koro))
+    })
     this log f"Sent state to all players."
     turn.actual.actorRef ! PlayerTurn
     this log f"Sent player turn to correct player."
@@ -124,13 +127,13 @@ class GameActor(playersNumber: Int) extends MyActor {
     case Terminated(ref) =>
       turn.all find (_.actorRef == ref) match {
         case Some(player) =>
-          System.err println (f"Player ${player.name} terminated.")
+          System.err println f"Player ${player.name} terminated."
           broadcastMessage(turn.all filterNot (_.actorRef == ref) map (_.actorRef), Drop()) // TODO: Change message.
           context.system.scheduler.scheduleOnce(20.second) {
-            System.err println (f"Terminating game actor...")
+            System.err println f"Terminating game actor..."
             self ! PoisonPill
           }
-        case _ => System.err println (f"Client with ${ref.path} not found.");
+        case _ => System.err println f"Client with ${ref.path} not found.";
       }
     case a: Any => this log f"Received unknown message while in terminated $a"
   }

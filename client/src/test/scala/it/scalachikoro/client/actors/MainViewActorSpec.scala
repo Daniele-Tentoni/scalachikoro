@@ -3,6 +3,7 @@ package it.scalachikoro.client.actors
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
+import it.scalachikoro.Constants
 import it.scalachikoro.client.controllers.listeners.MainViewActorListener
 import it.scalachikoro.messages.GameMessages.GameInvitation
 import it.scalachikoro.messages.LobbyMessages.{Hi, LeftQueue, Queued, Start}
@@ -10,7 +11,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class MainViewActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("test")))
+class MainViewActorSpec extends TestKit(ActorSystem(Constants.test, ConfigFactory.load(Constants.test)))
   with ImplicitSender
   with AnyWordSpecLike
   with BeforeAndAfterAll

@@ -3,12 +3,13 @@ package it.scalachikoro.server.lobby
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
+import it.scalachikoro.Constants
 import it.scalachikoro.messages.LobbyMessages._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class LobbyActorSpec extends TestKit(ActorSystem("test", ConfigFactory.load("test")))
+class LobbyActorSpec extends TestKit(ActorSystem(Constants.test, ConfigFactory.load(Constants.test)))
   with ImplicitSender
   with AnyWordSpecLike
   with BeforeAndAfterAll
