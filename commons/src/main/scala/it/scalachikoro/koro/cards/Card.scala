@@ -126,7 +126,7 @@ case class Card(name: String, cType: CardType, icon: Icon, cost: Int, income: In
     case _ => false
   }
 
-  def income(player: PlayerKoro): Operation = cType match {
+  def income(player: => PlayerKoro): Operation = cType match {
     case Restaurants(_) => Operation.Give(income, player)
     case PrimaryIndustry(_) => Operation.Receive(income, player)
     case SecondaryIndustry(_, sub) => Operation.Receive(income * player.cards.count(_.icon == sub), player)
