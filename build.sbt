@@ -2,7 +2,17 @@ name := "scalachikoro"
 
 version := "0.1.1"
 
-scalaVersion := "2.10.3"
+/*
+ * Use this build.sbt only with sbt 1.3x and newer.
+ * SemanticDB is enabled for all sub-projects via ThisBuild scope.
+ */
+inThisBuild(
+  Seq(
+    scalaVersion := "2.12.12",
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision // use Scalafix compatible version.
+  )
+)
 
 val akkaV = "2.5.13"
 val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % akkaV
@@ -51,15 +61,21 @@ coverageMinimum := 25
 coverageFailOnMinimum := true
 coverageExcludedPackages := "*it.scalachikoro.constants.*;"
 
+val commonsScalacOptions: Seq[String] = Seq(
+  "-Ywarn-unused-import", // required by `RemoveUnunsed` rule
+  "-feature"
+)
+
 /*
- * Project configurations.
+ * Projects configurations.
  */
 lazy val commons = Project(
   id = "commons",
   base = file("commons"))
   .settings(
     name := "commons",
-    libraryDependencies ++= (testDependencies :+ akkaTyped)
+    libraryDependencies ++= (testDependencies :+ akkaTyped),
+    scalacOptions ++= commonsScalacOptions
   )
 
 lazy val server = Project(
