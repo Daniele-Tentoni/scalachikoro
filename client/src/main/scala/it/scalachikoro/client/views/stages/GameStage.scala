@@ -18,7 +18,7 @@ object GameStage {
 
     scene = gameScene
 
-    onCloseRequest = _ => System.exit(0)
+    onCloseRequest = _ => println("Stage is closing")
 
     override def updateGameState(state: GameState): Unit = gameScene.updateGameState(state)
 

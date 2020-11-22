@@ -3,7 +3,7 @@ package it.scalachikoro.koro.cards
 import org.scalatest.wordspec.AnyWordSpec
 
 class CardSpec extends AnyWordSpec {
-  "Icon coversion" when {
+  "Icon conversion" when {
     "Submit a string" should {
       "produce RuntimeException if string is wrong" in {
         assertThrows[RuntimeException] {
@@ -11,7 +11,7 @@ class CardSpec extends AnyWordSpec {
         }
       }
 
-      object Others{
+      /*object Others{
         case class Other() extends Icon
       }
 
@@ -19,7 +19,7 @@ class CardSpec extends AnyWordSpec {
         assertThrows[RuntimeException] {
           val i: String = Others.Other()
         }
-      }
+      }*/
     }
   }
 }

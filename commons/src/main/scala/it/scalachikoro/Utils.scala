@@ -4,6 +4,7 @@ import java.security.SecureRandom
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.ArrayBuffer
+import scala.language.higherKinds
 
 object Utils {
   private[this] val defaultBytes = 32

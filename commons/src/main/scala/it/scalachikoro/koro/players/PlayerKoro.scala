@@ -36,7 +36,7 @@ case class PlayerKoro(override val id: String, name: String, money: Int, cards: 
 }
 
 object PlayerKoro {
-  def apply(id: String, name: String, money: Int, cards: Seq[Card]): PlayerKoro = new PlayerKoro(id, name, money, cards)
+  // def apply(id: String, name: String, money: Int, cards: Seq[Card]): PlayerKoro = new PlayerKoro(id, name, money, cards)
 
   def init(id: String, name: String): PlayerKoro = new PlayerKoro(id, name, 0, Card.starterCards)
 
