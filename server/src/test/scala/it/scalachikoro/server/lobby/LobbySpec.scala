@@ -15,7 +15,7 @@ class LobbySpec extends AnyWordSpec {
         lobby = lobby + PlayerRef(ActorRef.noSender, "0", "1")
         assert(!lobby.isEmpty)
       }
-      "don't remove a player if dosen't exist" in {
+      "don't remove a player if doesn't exist" in {
         lobby = lobby - "1"
         assert(!lobby.isEmpty)
       }
